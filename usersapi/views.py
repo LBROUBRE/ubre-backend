@@ -14,5 +14,3 @@ class UserList(generics.ListCreateAPIView):
             pk=self.kwargs['pk']
         )
         return obj
-
-#class Route(generics.ListCreateAPIView): #TODO
