@@ -1,10 +1,12 @@
 from django.db import models
+from django.urls import reverse
 
 class Users(models.Model):
-    name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=50)
+    dni = models.CharField(max_length=9, primary_key=True, default=0)
+    name = models.CharField(max_length=25, blank=False)
+    last_name = models.CharField(max_length=50, blank=False)
     email = models.EmailField()
-    tlf = models.IntegerField()
+    tlf = models.IntegerField(null=False)
     age = models.IntegerField()
 
     def __str__(self):
