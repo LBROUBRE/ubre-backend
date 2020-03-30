@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'usersapi.apps.UsersapiConfig',
-    'corsheaders'
+    'corsheaders',
+    'movility.apps.MovilityConfig',
 ]
 
 MIDDLEWARE = [
@@ -51,7 +51,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware'
-
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -82,8 +81,12 @@ WSGI_APPLICATION = 'ubrebackend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ubre',
+        'USER': 'ubre',
+        'PASSWORD': 'ubredatabase',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
