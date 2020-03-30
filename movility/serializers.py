@@ -32,7 +32,7 @@ class UsuariosSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuarios
-        fields = ['dni', 'name', 'last_name']
+        fields = ['dni', 'name', 'last_name', 'email', 'tlf', 'age']
 
 
 """""""""""""""""""""""""""
@@ -67,7 +67,7 @@ class RutasSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rutas
-        fields = ['origen', 'destino', 'fecha', 'vehiculo']
+        fields = ['origen', 'destino', 'fecha', 'vehiculo', 'paradas', 'conductor']
 
 
 """""""""""""""""""""""""""
@@ -102,7 +102,7 @@ class VehiculosSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rutas
-        fields = ['matricula', 'modelo', 'plazas']
+        fields = ['matricula', 'modelo', 'plazas', 'consumo', 'motor', 'categoria']
 
 
 """""""""""""""""""""""""""
@@ -113,7 +113,7 @@ class SolicitudesSerializer(serializers.ModelSerializer):
     destino = serializers.CharField(required=True)
     fechaHoraSalida = serializers.DateField(required=True)
     idUsuario = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateTimeField()
+    fechaHoraLlegada = serializers.DateTimeField()
     estado = serializers.CharField(required=True)
     precio = serializers.IntegerField(required=True)
 
@@ -131,7 +131,7 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         instance.destino = validated_data('destino', instance.destino)
         instance.fechaHoraSalida = validated_data('fechaHoraSalida', instance.fechaHoraSalida)
         instance.idUsuario = validated_data.get('idUsuario', instance.idUsuario)
-        instance.fechaHoraSalida = validated_data.get('fechaHoraSalida', instance.fechaHoraSalida)
+        instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
         instance.estado = validated_data.get('estado', instance.estado)
         instance.precio = validated_data.get('precio', instance.precio)
         instance.save()
@@ -139,4 +139,4 @@ class SolicitudesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rutas
-        fields = ['origen', 'destino', 'estado']
+        fields = ['origen', 'destino', 'fechaHoraSalida', 'idUsuario', 'fechaHoraLlegada', 'estado', 'precio']

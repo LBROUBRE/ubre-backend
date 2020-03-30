@@ -10,7 +10,7 @@ class Usuarios(models.Model):
     tlf = models.IntegerField(null=False)
 
     def __str__(self):
-        return '%s %s' % (self.dni, self.name, self.last_name)
+        return '%s %s %s' % (self.dni, self.name, self.last_name)
 
 class Vehiculos (models.Model):
     matricula = models.CharField(max_length=7, blank=False)
