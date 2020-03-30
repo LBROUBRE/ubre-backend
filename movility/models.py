@@ -8,10 +8,9 @@ class Usuarios(models.Model):
     email = models.EmailField()
     age = models.IntegerField()
     tlf = models.IntegerField(null=False)
-    #solicitudes = models
 
     def __str__(self):
-        return self.last_name, self.name
+        return '%s %s' % (self.dni, self.name, self.last_name)
 
 class Vehiculos (models.Model):
     matricula = models.CharField(max_length=7, blank=False)
@@ -22,22 +21,22 @@ class Vehiculos (models.Model):
     categoria = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.matricula, self.plazas
+        return '%s %s %s' % (self.matricula, self.modelo, self.plazas)
 
 class Rutas (models.Model):
-    origen = models.IntegerField(null=False)
-    destino = models.IntegerField(null=False)
+    origen = models.CharField(max_length=25, blank=False)
+    destino = models.CharField(max_length=25, blank=False)
     fecha = models.DateTimeField()
     vehiculo = models.ForeignKey(Vehiculos, on_delete=models.DO_NOTHING)
-    paradas = models.IntegerField(null=False)
-    conductor = models.CharField(max_length=50)
+    paradas = models.CharField(max_length=25, blank=False)
+    conductor = models.CharField(max_length=25, blank=False)
     
     def __str__(self):
-        return self.origen, self.destino, self.fecha
+        return '%s %s %s' % (self.origen, self.destino, self.fecha)
 
 class Solicitudes (models.Model):
-    origen = models.CharField(max_length=50)
-    destino = models.CharField(max_length=50)
+    origen = models.CharField(max_length=25, blank=False)
+    destino = models.CharField(max_length=25, blank=False)
     fechaHoraSalida = models.DateField()
     idUsuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
     fechaHoraLlegada = models.DateField()
@@ -45,4 +44,4 @@ class Solicitudes (models.Model):
     precio = models.IntegerField()
 
     def __str__(self):
-        return self.origen, self.destino, self.fechaHoraSalida, self.idUsuario
+        return '%s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.idUsuario)
