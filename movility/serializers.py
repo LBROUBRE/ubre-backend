@@ -108,20 +108,46 @@ class VehiculosSerializer(serializers.ModelSerializer):
 """""""""""""""""""""""""""
         Solicitudes
 """""""""""""""""""""""""""
+class UsuariosSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Usuarios
+        fields = '__all__'
+        extra_kwargs={
+            'dni':{'read_only':False},
+        }
+
 class SolicitudesSerializer(serializers.ModelSerializer):
+    '''    
     origen = serializers.CharField(required=True)
     destino = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateField(required=True)
+    fechaHoraSalida = serializers.DateTimeField(required=True)
     idUsuario = serializers.CharField(required=True)
-    fechaHoraLlegada = serializers.DateTimeField()
+    fechaHoraLlegada = serializers.DateTimeField() 
     estado = serializers.CharField(required=True)
     precio = serializers.IntegerField(required=True)
+    '''
+    idUsuario=UsuariosSerializer(required=False)
+
+    class Meta:
+        model = Solicitudes
+        fields = ('origen', 'destino', 'fechaHoraSalida', 'fechaHoraLlegada', 'estado', 'precio', 'idUsuario')
 
     def create(self, validated_data):
         """
-        Crea y retorna una nueva instancia de User, dado el 'validated_data'
+        Crea y retorna una nueva instancia de Solicitud, dado el 'validated_data'
         """
-        return Solicitudes.objects.create(**validated_data)
+        user_data = validated_data.pop('idUsuario')
+        print(user_data['dni'])
+        user = Usuarios.objects.get(dni=user_data['dni']) # Retorna el usuario con el mismo dni
+        return Solicitudes.objects.create(
+            origen=validated_data['origen'],
+            destino=validated_data['destino'],
+            fechaHoraSalida=validated_data['fechaHoraSalida'],
+            fechaHoraLlegada=validated_data['fechaHoraLlegada'],
+            estado=validated_data['estado'],
+            precio=validated_data['precio'],
+            idUsuario=user
+        )
 
     def update(self, instance, validated_data):
         """
@@ -138,5 +164,5 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = Rutas
+        model = Solicitudes
         fields = ['origen', 'destino', 'fechaHoraSalida', 'idUsuario', 'fechaHoraLlegada', 'estado', 'precio']

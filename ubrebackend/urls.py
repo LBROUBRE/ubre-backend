@@ -19,4 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('movility/', include('movility.urls')),
+    path('movility/', include('ubrebackend.app.user.urls')),
+    path('movility/', include('ubrebackend.app.profile.urls')),
 ]
