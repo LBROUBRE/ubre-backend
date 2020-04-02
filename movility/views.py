@@ -60,32 +60,6 @@ def usuarios_detail(request, pk, format=None):
         serializer = UsuariosSerializer(user)
         return Response(serializer.data)
 
-
-"""""""""""""""""""""""""""
-        Rutas
-"""""""""""""""""""""""""""
-class RouteResponseView(APIView):
-    def get(self, request, user_dni, origin, dest, departure_date, arrival_date):
-
-        #TODO check if exists user dni
-
-        # Names to coordinates
-        origin_coords = routes.name_to_coordinates(origin, alldata=False)
-        dest_coords = routes.name_to_coordinates(dest, alldata=False)
-
-        # Create petition in bbdd
-        petition_data {
-            #TODO id de la solicitud?¿? autogenerada en la bbdd en teoria
-            "origen":origin_coords,
-            "destino":dest_coords,
-            "fechaHoraSalida":departure_date, #TODO date formate
-            "fechaHoraLlegada":arrival_date,
-            "estado": #TODO ¿?¿?
-            "idUsuario":user_dni
-        }
-
-
-
 """""""""""""""""""""""""""
         Vehiculos
 """""""""""""""""""""""""""
@@ -150,8 +124,30 @@ def solicitudes_list(request, format=None):
         serializer = SolicitudesSerializer(solicitudes, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST':
-        serializer = SolicitudesSerializer(data=request.data)
+    elif request.method == 'POST': #request = { usuario, origen, destino, fecha-salida, fecha-llegada }
+
+        user = Usuarios.objects.get(dni=request.data["usuario"])
+
+        user_data = {
+            "dni":user.dni,
+            "name":user.name,
+            "last_name":user.last_name,
+            "email":user.email,
+            "tlf":user.tlf,
+            "age":user.age,
+        }
+
+        data = {
+            "origen":routes.name_to_coordinates(request.data["origen"], alldata=False),
+            "destino":routes.name_to_coordinates(request.data["destino"], alldata=False),
+            "fechaHoraSalida":request.data["fechaHoraSalida"],
+            "fechaHoraLlegada":request.data["fechaHoraLlegada"],
+            "precio":0,
+            "estado":"pendiente",
+            "usuario":user_data
+        }
+
+        serializer = SolicitudesSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)

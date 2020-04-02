@@ -37,11 +37,11 @@ class Rutas (models.Model):
 class Solicitudes (models.Model):
     origen = models.CharField(max_length=25, blank=False)
     destino = models.CharField(max_length=25, blank=False)
-    fechaHoraSalida = models.DateField()
-    idUsuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
-    fechaHoraLlegada = models.DateField()
+    fechaHoraSalida = models.DateTimeField()
+    usuario = models.ForeignKey(Usuarios, on_delete=models.CASCADE)
+    fechaHoraLlegada = models.DateTimeField()
     estado = models.CharField(max_length=25, blank=False)
     precio = models.IntegerField()
 
     def __str__(self):
-        return '%s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.idUsuario)
+        return '%s %s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.fechaHoraLlegada, self.usuario)
