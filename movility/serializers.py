@@ -111,8 +111,8 @@ class VehiculosSerializer(serializers.ModelSerializer):
 class SolicitudesSerializer(serializers.ModelSerializer):
     origen = serializers.CharField(required=True)
     destino = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateField(required=True)
-    idUsuario = serializers.CharField(required=True)
+    fechaHoraSalida = serializers.DateTimeField(required=True)
+    usuario = UsuariosSerializer(required=True)
     fechaHoraLlegada = serializers.DateTimeField()
     estado = serializers.CharField(required=True)
     precio = serializers.IntegerField(required=True)
@@ -121,6 +121,10 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         """
         Crea y retorna una nueva instancia de User, dado el 'validated_data'
         """
+        user_data = validated_data.pop('usuario', None)
+        if user_data:
+            user = Usuarios.objects.get_or_create(**user_data)[0]
+            validated_data['usuario'] = user
         return Solicitudes.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
@@ -130,7 +134,7 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         instance.origen = validated_data('origen', instance.origen)
         instance.destino = validated_data('destino', instance.destino)
         instance.fechaHoraSalida = validated_data('fechaHoraSalida', instance.fechaHoraSalida)
-        instance.idUsuario = validated_data.get('idUsuario', instance.idUsuario)
+        instance.usuario = validated_data.get('usuario', instance.usuario)
         instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
         instance.estado = validated_data.get('estado', instance.estado)
         instance.precio = validated_data.get('precio', instance.precio)
@@ -139,4 +143,4 @@ class SolicitudesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rutas
-        fields = ['origen', 'destino', 'fechaHoraSalida', 'idUsuario', 'fechaHoraLlegada', 'estado', 'precio']
+        fields = ['origen', 'destino', 'fechaHoraSalida', 'usuario', 'fechaHoraLlegada', 'estado', 'precio']
