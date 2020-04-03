@@ -2,6 +2,42 @@ from .models import Usuarios, Rutas, Vehiculos, Solicitudes
 from rest_framework import serializers
 
 """""""""""""""""""""""""""
+        Solicitudes
+"""""""""""""""""""""""""""
+class SolicitudesSerializer(serializers.ModelSerializer):
+    origen = serializers.CharField(required=True)
+    destino = serializers.CharField(required=True)
+    fechaHoraSalida = serializers.DateTimeField(required=True)
+    fechaHoraLlegada = serializers.DateTimeField()
+    estado = serializers.CharField(required=True)
+    precio = serializers.IntegerField(required=True)
+    print("lego")
+
+    def create(self, validated_data):
+        """
+        Crea y retorna una nueva instancia de User, dado el 'validated_data'
+        """
+        return Solicitudes.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Actualiza y retorna la instancia de User creada, dado un 'validated_data'
+        """
+        instance.origen = validated_data('origen', instance.origen)
+        instance.destino = validated_data('destino', instance.destino)
+        instance.fechaHoraSalida = validated_data('fechaHoraSalida', instance.fechaHoraSalida)
+        instance.usuario_id = validated_data.get('usuario_id', instance.usuario_id)
+        instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
+        instance.estado = validated_data.get('estado', instance.estado)
+        instance.precio = validated_data.get('precio', instance.precio)
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Solicitudes
+        fields = "__all__"
+
+"""""""""""""""""""""""""""
         Usuarios
 """""""""""""""""""""""""""
 class UsuariosSerializer(serializers.ModelSerializer):
@@ -11,7 +47,7 @@ class UsuariosSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     tlf = serializers.IntegerField(required=True)
     age = serializers.IntegerField(required=False)
-
+    solicitudes = SolicitudesSerializer(many=True)
     def create(self, validated_data):
         """
         Crea y retorna una nueva instancia de User, dado el 'validated_data'
@@ -32,7 +68,8 @@ class UsuariosSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Usuarios
-        fields = ['dni', 'name', 'last_name', 'email', 'tlf', 'age']
+        fields = ['dni', 'name', 'last_name', 'email', 'tlf', 'age', 'solicitudes']
+        extra_kwargs = {'solicitudes':{'required': False}}
 
 
 """""""""""""""""""""""""""
@@ -108,6 +145,7 @@ class VehiculosSerializer(serializers.ModelSerializer):
 """""""""""""""""""""""""""
         Solicitudes
 """""""""""""""""""""""""""
+'''
 class UsuariosSerializer(serializers.ModelSerializer):
     class Meta:
         model=Usuarios
@@ -115,43 +153,4 @@ class UsuariosSerializer(serializers.ModelSerializer):
         extra_kwargs={
             'dni':{'read_only':False},
         }
-
-"""""""""""""""""""""""""""
-        Solicitudes
-"""""""""""""""""""""""""""
-class SolicitudesSerializer(serializers.ModelSerializer):
-    origen = serializers.CharField(required=True)
-    destino = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateTimeField(required=True)
-    usuario = UsuariosSerializer(required=True)
-    fechaHoraLlegada = serializers.DateTimeField()
-    estado = serializers.CharField(required=True)
-    precio = serializers.IntegerField(required=True)
-
-    def create(self, validated_data):
-        """
-        Crea y retorna una nueva instancia de User, dado el 'validated_data'
-        """
-        user_data = validated_data.pop('usuario', None)
-        if user_data:
-            user = Usuarios.objects.get_or_create(**user_data)[0]
-            validated_data['usuario'] = user
-        return Solicitudes.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Actualiza y retorna la instancia de User creada, dado un 'validated_data'
-        """
-        instance.origen = validated_data('origen', instance.origen)
-        instance.destino = validated_data('destino', instance.destino)
-        instance.fechaHoraSalida = validated_data('fechaHoraSalida', instance.fechaHoraSalida)
-        instance.usuario = validated_data.get('usuario', instance.usuario)
-        instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
-        instance.estado = validated_data.get('estado', instance.estado)
-        instance.precio = validated_data.get('precio', instance.precio)
-        instance.save()
-        return instance
-
-    class Meta:
-        model = Rutas
-        fields = ['origen', 'destino', 'fechaHoraSalida', 'usuario', 'fechaHoraLlegada', 'estado', 'precio']
+'''

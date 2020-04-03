@@ -17,6 +17,7 @@ from .utils import routes
 """""""""""""""""""""""""""
 @api_view(['GET', 'POST'])
 def usuarios_list(request, format=None):
+    print("mecagondios")
     """
     Lista todos los usuarios, o crea un nuevo usuario.
     """
@@ -120,12 +121,12 @@ class SolicitudesRegistrationView(CreateAPIView):
 
     serializer_class = SolicitudesSerializer
     permission_classes = (AllowAny,)
-
+    '''
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance=serializer.save(commit=False)
-        instance.idUsuario = request.idUsuario
+        instance.usuario_id = request.usuario
         serializer.save()
         response = {
             'success' : 'True',
@@ -134,7 +135,7 @@ class SolicitudesRegistrationView(CreateAPIView):
             }
         status_code = status.HTTP_200_OK
         return Response(response, status=status_code)
-
+    '''
 
 @api_view(['GET', 'POST'])
 def solicitudes_list(request, format=None):
@@ -147,7 +148,7 @@ def solicitudes_list(request, format=None):
         return Response(serializer.data)
 
     elif request.method == 'POST': #request = { usuario, origen, destino, fecha-salida, fecha-llegada }
-
+        '''
         user = Usuarios.objects.get(dni=request.data["usuario"])
 
         user_data = {
@@ -158,18 +159,18 @@ def solicitudes_list(request, format=None):
             "tlf":user.tlf,
             "age":user.age,
         }
-
+        
         data = {
             "origen":routes.name_to_coordinates(request.data["origen"], alldata=False),
             "destino":routes.name_to_coordinates(request.data["destino"], alldata=False),
             "fechaHoraSalida":request.data["fechaHoraSalida"],
             "fechaHoraLlegada":request.data["fechaHoraLlegada"],
             "precio":0,
-            "estado":"pendiente",
-            "usuario":user_data
+            "estado":request.data["estado"],
+            "usuario_id":"34285964W"
         }
-
-        serializer = SolicitudesSerializer(data=data)
+        '''
+        serializer = SolicitudesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -204,3 +205,5 @@ def solicitudes_detail(request, pk, format=None):
         solicitud=Solicitudes.objects.get(id=id)
         serializer = SolicitudesSerializer(solicitud)
         return Response(serializer.data)
+
+        

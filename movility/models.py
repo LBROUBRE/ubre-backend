@@ -58,7 +58,7 @@ class Solicitudes (models.Model):
     origen = models.CharField(max_length=25, blank=False)
     destino = models.CharField(max_length=25, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=False)
-    usuario = models.ForeignKey(Usuarios, default=None, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.CASCADE)
     fechaHoraLlegada = models.DateTimeField(blank=False)
     STATES_CHOICES = {
         ('PE', 'Pending'),
@@ -70,7 +70,7 @@ class Solicitudes (models.Model):
     precio = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return '%s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.idUsuario)
+        return '%s %s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.fechaHoraLlegada, self.usuario)
 
 class Conductores(models.Model):
     dni = models.CharField(max_length=9, primary_key=True, default=0)
@@ -105,8 +105,4 @@ class Tarificacion (models.Model):
     discount = models.DecimalField(max_digits=2, decimal_places=2, default=0.0)
     
     def __str__(self):
-<<<<<<< HEAD
         return '%s %s ' % (self.userType, self.discount)
-=======
-        return '%s %s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.fechaHoraLlegada, self.usuario)
->>>>>>> 6dec753736f4aca7251302c884b5b9cd2231dd22
