@@ -4,9 +4,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 import requests
+from rest_framework.permissions import AllowAny
+from rest_framework.generics import CreateAPIView, RetrieveAPIView
 
 from .models import Usuarios, Rutas, Solicitudes, Vehiculos
-from .serializers import UsuariosSerializer, RutasSerializer, SolicitudesSerializer, VehiculosSerializer
+from .serializers import *
 
 from .utils import routes
 
@@ -16,7 +18,7 @@ from .utils import routes
 @api_view(['GET', 'POST'])
 def usuarios_list(request, format=None):
     """
-    Lista todos los usuarios, o crea un nuevo usuario.
+    Lista todos los usuarios, o crea uno nuevo.
     """
     if request.method == 'GET':
         usuarios = Usuarios.objects.all()
@@ -66,7 +68,7 @@ def usuarios_detail(request, pk, format=None):
 @api_view(['GET', 'POST'])
 def vehiculos_list(request, format=None):
     """
-    Lista todos los usuarios, o crea un nuevo usuario.
+    Lista todos los vehiculos, o crea uno nuevo.
     """
     if request.method == 'GET':
         vehiculos = Vehiculos.objects.all()
@@ -83,7 +85,7 @@ def vehiculos_list(request, format=None):
 @api_view(['GET', 'PUT', 'DELETE'])
 def vehiculos_detail(request, pk, format=None):
     """
-    Obtiene, actualiza o borra un usuario.
+    Obtiene, actualiza o borra un vehiculo.
     """
     try:
         vehiculo = Vehiculos.objects.get(pk=pk)
@@ -117,7 +119,7 @@ def vehiculos_detail(request, pk, format=None):
 @api_view(['GET', 'POST'])
 def solicitudes_list(request, format=None):
     """
-    Lista todos los usuarios, o crea un nuevo usuario.
+    Lista todos las Solicitudes, o crea una nueva.
     """
     if request.method == 'GET':
         solicitudes = Solicitudes.objects.all()
@@ -125,29 +127,7 @@ def solicitudes_list(request, format=None):
         return Response(serializer.data)
 
     elif request.method == 'POST': #request = { usuario, origen, destino, fecha-salida, fecha-llegada }
-
-        user = Usuarios.objects.get(dni=request.data["usuario"])
-
-        user_data = {
-            "dni":user.dni,
-            "name":user.name,
-            "last_name":user.last_name,
-            "email":user.email,
-            "tlf":user.tlf,
-            "age":user.age,
-        }
-
-        data = {
-            "origen":routes.name_to_coordinates(request.data["origen"], alldata=False),
-            "destino":routes.name_to_coordinates(request.data["destino"], alldata=False),
-            "fechaHoraSalida":request.data["fechaHoraSalida"],
-            "fechaHoraLlegada":request.data["fechaHoraLlegada"],
-            "precio":0,
-            "estado":"pendiente",
-            "usuario":user_data
-        }
-
-        serializer = SolicitudesSerializer(data=data)
+        serializer = SolicitudesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -181,4 +161,208 @@ def solicitudes_detail(request, pk, format=None):
     if request.method=='GET':
         solicitud=Solicitudes.objects.get(id=id)
         serializer = SolicitudesSerializer(solicitud)
+        return Response(serializer.data)
+
+
+"""""""""""""""""""""""""""
+        Conductores
+"""""""""""""""""""""""""""
+@api_view(['GET', 'POST'])
+def conductores_list(request, format=None):
+    """
+    Lista todos los Conductores, o crea uno nuevo.
+    """
+    if request.method == 'GET':
+        conductores = Rutas.objects.all()
+        serializer = ConductoresSerializer(conductores, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ConductoresSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def conductores_detail(request, pk, format=None):
+    """
+    Obtiene, actualiza o borra un usuario.
+    """
+    try:
+        conductores = Conductores.objects.get(pk=pk)
+    except Conductores.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ConductoresSerializer(conductores)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ConductoresSerializer(conductores, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        conductores.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method=='GET':
+        rutas=Conductores.objects.get(id=id)
+        serializer = ConductoresSerializer(conductores)
+        return Response(serializer.data)
+
+
+"""""""""""""""""""""""""""
+        Tarificación
+"""""""""""""""""""""""""""
+@api_view(['GET', 'POST'])
+def tarificacion_list(request, format=None):
+    """
+    Lista toda la Tarificación, o crea uno nuevo.
+    """
+    if request.method == 'GET':
+        tarificacion = Tarificacion.objects.all()
+        serializer = TarificacionSerializer(tarificacion, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = TarificacionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def tarificacion_detail(request, pk, format=None):
+    """
+    Obtiene, actualiza o borra una tarifa.
+    """
+    try:
+        tarificacion = Tarificacion.objects.get(pk=pk)
+    except Tarificacion.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = TarificacionSerializer(tarificacion)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = TarificacionSerializer(tarificacion, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        tarificacion.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method=='GET':
+        rutas=Tarificacion.objects.get(id=id)
+        serializer = TarificacionSerializer(tarificacion)
+        return Response(serializer.data)
+
+
+"""""""""""""""""""""""""""
+        Paradas
+"""""""""""""""""""""""""""
+@api_view(['GET', 'POST'])
+def paradas_list(request, format=None):
+    """
+    Lista toda la Tarificación, o crea uno nuevo.
+    """
+    if request.method == 'GET':
+        paradas = Paradas.objects.all()
+        serializer = ParadasSerializer(paradas, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ParadasSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def paradas_detail(request, pk, format=None):
+    """
+    Obtiene, actualiza o borra una tarifa.
+    """
+    try:
+        paradas = Paradas.objects.get(pk=pk)
+    except Paradas.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ParadasSerializer(paradas)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ParadasSerializer(paradas, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        paradas.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method=='GET':
+        paradas=Paradas.objects.get(id=id)
+        serializer = ParadasSerializer(paradas)
+        return Response(serializer.data)
+
+
+"""""""""""""""""""""""""""
+        Rutas
+"""""""""""""""""""""""""""
+@api_view(['GET', 'POST'])
+def rutas_list(request, format=None):
+    """
+    Lista todas las rutas, o crea uno nuevo.
+    """
+    if request.method == 'GET':
+        rutas = Rutas.objects.all()
+        serializer = RutasSerializer(rutas, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = RutasSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def rutas_detail(request, pk, format=None):
+    """
+    Obtiene, actualiza o borra una ruta.
+    """
+    try:
+        rutas = Rutas.objects.get(pk=pk)
+    except Rutas.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = RutasSerializer(rutas)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = RutasSerializer(rutas, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        rutas.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method=='GET':
+        rutas=Rutas.objects.get(id=id)
+        serializer = RutasSerializer(rutas)
         return Response(serializer.data)
