@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 
 class Usuarios(models.Model):
-    dni = models.CharField(max_length=9, primary_key=True, default=0)
+    dni = models.CharField(max_length=9, primary_key=True, default="00000000T")
     name = models.CharField(max_length=25, unique=False)
     last_name = models.CharField(max_length=50, unique=False)
     email = models.EmailField(max_length=255, unique=True)
@@ -13,7 +13,7 @@ class Usuarios(models.Model):
         ('F', 'Female'),
         ('O', 'Other'),
     )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='O')
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='')
 
     def __str__(self):
         return '%s %s %s' % (self.dni, self.name, self.last_name)
@@ -36,23 +36,7 @@ class Vehiculos (models.Model):
     categoria = models.CharField(max_length=1, choices=CATEGORY_CHOICES)
 
     def __str__(self):
-        return '%s %s %s' % (self.matricula, self.modelo, self.plazas)
-
-class Rutas (models.Model):
-    origen = models.CharField(max_length=25, blank=False)
-    destino = models.CharField(max_length=25, blank=False)
-    fecha = models.DateTimeField(blank=False)
-    vehiculo = models.ForeignKey(Vehiculos, on_delete=models.DO_NOTHING)
-    paradas = models.CharField(max_length=25, unique=False) # Hay que definirlo bien
-    conductor = models.CharField(max_length=25, unique=False)
-    
-    def __str__(self):
-        return '%s %s %s' % (self.origen, self.destino, self.fecha)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['origen', 'destino', 'fecha'], name='unique_rutas')
-        ]
+        return '%s %s %s' % (self.matricula, self.categoria, self.plazas)
 
 class Solicitudes (models.Model):
     origen = models.CharField(max_length=25, blank=False)
@@ -93,6 +77,21 @@ class Conductores(models.Model):
     def __str__(self):
         return '%s %s %s %s' % (self.dni, self.name, self.last_name, self.permisoConduccion)
 
+class Rutas (models.Model):
+    origen = models.CharField(max_length=25, blank=False, unique=False)
+    destino = models.CharField(max_length=25, blank=False, unique=False)
+    vehiculo = models.ForeignKey(Vehiculos, related_name="rutas", on_delete=models.DO_NOTHING)
+    #paradas = models.ForeignKey(Paradas, related_name="rutas", on_delete=models.DO_NOTHING)
+    conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return '%s %s' % (self.origen, self.destino)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['origen', 'destino'], name='unique_rutas')
+        ]
+
 
 class Tarificacion (models.Model):
     USER_CHOICES = (
@@ -106,3 +105,12 @@ class Tarificacion (models.Model):
     
     def __str__(self):
         return '%s %s ' % (self.userType, self.discount)
+
+class Paradas (models.Model):
+    coordenadas = models.CharField(primary_key=True, max_length=255) #latitud, longitud
+    fechaHora = models.DateTimeField()
+    solicitudes = models.ManyToManyField(Solicitudes, related_name="paradas", blank=True)
+    rutas = models.ManyToManyField(Rutas, related_name="paradas", blank=True)
+
+    def __str__(self):
+        return '%s %s ' % (self.coordenadas, self.fechaHora)
