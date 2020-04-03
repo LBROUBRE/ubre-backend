@@ -29,4 +29,8 @@ urlpatterns = [
     # Routes
     path('routes/', rutas_list),
     path('routes/<pk>', rutas_detail),
+    
+    # Test
+    path('test', _test_) # TODO remove
+
 ]

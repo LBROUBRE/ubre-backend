@@ -163,7 +163,6 @@ def solicitudes_detail(request, pk, format=None):
         serializer = SolicitudesSerializer(solicitud)
         return Response(serializer.data)
 
-
 """""""""""""""""""""""""""
         Conductores
 """""""""""""""""""""""""""
@@ -366,3 +365,10 @@ def rutas_detail(request, pk, format=None):
         rutas=Rutas.objects.get(id=id)
         serializer = RutasSerializer(rutas)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def _test_(request): #TODO remove
+    if request.method=='GET':
+        new_route = routes.generate_route_from_dbrequests()
+        return Response()
+
