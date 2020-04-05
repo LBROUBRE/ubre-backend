@@ -2,15 +2,21 @@
 # http://git-scm.com/docs/gitignore
 
 #nominatim-cache
-/cache
+cache/
+
+#migrations
+migrations/
 
 # Byte-compiled / optimized / DLL files
 **/*.py[cod]
 *.pyc
-**/__pycache__/
-*/*/*/__pycache__/
-*/*/__pycache__
-*/__pycache__
+__pycache__/
+
+# **/__pycache__/
+# */*/*/__pycache__/
+# */*/__pycache__
+# */__pycache__
+
 # C extensions
 *.so
 

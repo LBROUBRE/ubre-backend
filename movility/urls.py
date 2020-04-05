@@ -31,6 +31,6 @@ urlpatterns = [
     path('routes/<pk>', rutas_detail),
     
     # Test
-    path('test', _test_) # TODO remove
+    path('test/', test_vroom) # TODO remove
 
 ]

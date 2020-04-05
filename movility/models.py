@@ -1,8 +1,9 @@
 from django.db import models
 from django.urls import reverse
+import uuid
 
 class Usuarios(models.Model):
-    dni = models.CharField(max_length=9, primary_key=True, default="00000000T")
+    dni = models.CharField(max_length=9, primary_key=True)
     name = models.CharField(max_length=25, unique=False)
     last_name = models.CharField(max_length=50, unique=False)
     email = models.EmailField(max_length=255, unique=True)
@@ -39,6 +40,7 @@ class Vehiculos (models.Model):
         return '%s %s %s' % (self.matricula, self.categoria, self.plazas)
 
 class Solicitudes (models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     origen = models.CharField(max_length=25, blank=False)
     destino = models.CharField(max_length=25, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=False)
@@ -82,7 +84,7 @@ class Rutas (models.Model):
     destino = models.CharField(max_length=25, blank=False, unique=False)
     vehiculo = models.ForeignKey(Vehiculos, related_name="rutas", on_delete=models.DO_NOTHING)
     #paradas = models.ForeignKey(Paradas, related_name="rutas", on_delete=models.DO_NOTHING)
-    conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.CASCADE)
+    #conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.CASCADE)
     
     def __str__(self):
         return '%s %s' % (self.origen, self.destino)
