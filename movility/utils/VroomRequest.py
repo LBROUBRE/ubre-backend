@@ -35,9 +35,9 @@ class VroomRequest:
     def get_request_id(self, job_id):
         for shipment in self.shipments:
             if shipment["pickup"] == job_id:
-                return shipment["db_request_id"]
+                return shipment["request"]
             if shipment["delivery"] == job_id:
-                return shipment["db_request_id"]
+                return shipment["request"]
 
     def get_next_job_id(self):
         next_job_id = 0
@@ -82,14 +82,27 @@ class VroomRequest:
             "delivery": delivery_id
         })
 
+        pickup_location_array = [float(pickup_location.split(",")[0]), float(pickup_location.split(",")[1])]
+        delivery_location_array = [float(delivery_location.split(",")[0]), float(delivery_location.split(",")[1])]
         self.vroom_request["shipments"].append({
             "amount": [amount],
             "pickup": {
                 "id": pickup_id,
-                "location": pickup_location
+                "location": pickup_location_array
             },
             "delivery": {
                 "id": delivery_id,
-                "location": delivery_location
+                "location": delivery_location_array
+            }
+        })
+        print({
+            "amount": [amount],
+            "pickup": {
+                "id": pickup_id,
+                "location": pickup_location_array
+            },
+            "delivery": {
+                "id": delivery_id,
+                "location": delivery_location_array
             }
         })

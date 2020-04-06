@@ -4,7 +4,6 @@ from datetime import datetime
 from movility.models import Solicitudes, Vehiculos, Conductores
 from movility.serializers import *
 from movility.utils.VroomRequest import VroomRequest
-import requests
 
 # def name_to_coordinates(search_string, alldata=False): # TODO do this in Front-end
 #     from OSMPythonTools.nominatim import Nominatim
@@ -14,7 +13,7 @@ import requests
 #     else: return str(response[0]["lat"]) + ", " + str(response[0]["lon"])
 
 
-def generate_vroom_request(): #TODO
+def generate_vroom_request():  # TODO
     
     # get all instances of Solicitudes, Vehiculos and Conductores in the DB
     reqs = Solicitudes.objects.all()
@@ -35,9 +34,17 @@ def generate_vroom_request(): #TODO
 
 
 def process_vroom_routing(request):
+    import requests as rest
+    from movility.utils.VroomResponseProcessor import VroomResponseProcessor
+
     response = request.get_response()
     vroom_response_processor = VroomResponseProcessor(request)
 
+    routes = vroom_response_processor.get_routes()
+    for route in routes:
+        print(route)
+        res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
+        print(res)
 
 
 def vroom_call():
@@ -47,3 +54,5 @@ def vroom_call():
 
     # Process the Vroom response  and updates the DB with the data obtained
     process_vroom_routing(request)
+
+    return 0

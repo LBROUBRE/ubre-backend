@@ -341,6 +341,6 @@ def rutas_detail(request, pk, format=None):
 
 @api_view(['GET'])
 def test_vroom(request): #TODO remove
-    if request.method=='GET':
-        vroom_request = routes.generate_vroom_request()
-        return Response(vroom_request.get_request())
+    if request.method == 'GET':
+        routes.vroom_call()
+        return Response(None, status=status.HTTP_204_NO_CONTENT)

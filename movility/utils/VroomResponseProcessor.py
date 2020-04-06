@@ -1,15 +1,14 @@
 step = {
-    "coord": [lon, lat],
-    "date": "",
-    "request": 0
+    "coordenadas": [0, 0],
+    "fechaHora": "",
+    "solicitudes": 0
 }
 
 route = {
-    "id": 0,
-    "vehicle": "",
-    "origin": [0, 0],
-    "destination": [0, 0],
-    "steps": []
+    "vehiculo": "",
+    "origen": [0, 0],
+    "destino": [0, 0],
+    "paradas": []
 }
 
 
@@ -19,7 +18,7 @@ class VroomResponseProcessor:
         self.request = request
         self.response = request.get_response()
 
-        self.routes = get_routes()
+        self.routes = self.get_routes()
 
     def get_status_code(self):
         return self.response["code"]
@@ -28,31 +27,31 @@ class VroomResponseProcessor:
         return self.response["error"]
 
     def get_routes(self):
+        print(self.response)
         request_routes = self.response["routes"]
         routes = []
         for request_route in request_routes:
-            route["id"] = 0  # TODO: do we have a route id? Or we make it when uploading to DB
 
-            vehicle_id = request_route[vehicle]
-            route["vehicle"] = self.request.get_vehicle_id(vehicle_id)
+            vehicle_id = request_route["vehicle"]
+            route["vehiculo"] = self.request.get_vehicle_id(vehicle_id)
 
             request_steps = request_route["steps"]
-            route["origin"] = request_steps[0]
-            route["destination"] = request_steps[len(request_steps)]
+            route["origen"] = "%f, %f" % (request_steps[0]["location"][0], request_steps[0]["location"][1])
+            route["destino"] = "%f, %f" % (request_steps[-1]["location"][0], request_steps[-1]["location"][1])
 
             # TODO: maybe this is not exactly the best way to remove the start/end steps
-            request_steps.remove(request_steps[request_steps])
+            request_steps.remove(request_steps[-1])
             request_steps.remove(request_steps[0])
 
             steps = []
             for request_step in request_steps:
-                step["coord"] = request_step["location"]
-                step["date"] = ""  # TODO: se hace lo que se puede
-                step["request"] = self.request.get_request_id(request_step["job"])
+                step["coordenadas"] = "%f, %f" % (request_step["location"][0], request_step["location"][1])
+                step["fechaHora"] = "2020-04-06 18:00:31+00:00"  # TODO: se hace lo que se puede
+                step["solicitudes"] = self.request.get_request_id(request_step["job"])
 
-                steps.appednd(step)
+                steps.append(step)
 
-            route["steps"] = steps
+            route["paradas"] = steps
 
             routes.append(route)
 
