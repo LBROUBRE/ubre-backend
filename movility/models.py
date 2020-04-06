@@ -1,6 +1,10 @@
+
+# TODO: on_delete = CASCADE
+
 from django.db import models
 from django.urls import reverse
 import uuid
+
 
 class Usuarios(models.Model):
     dni = models.CharField(max_length=9, primary_key=True)
@@ -18,6 +22,7 @@ class Usuarios(models.Model):
 
     def __str__(self):
         return '%s %s %s' % (self.dni, self.name, self.last_name)
+
 
 class Vehiculos (models.Model):
     matricula = models.CharField(max_length=7, primary_key=True)
@@ -39,12 +44,12 @@ class Vehiculos (models.Model):
     def __str__(self):
         return '%s %s %s' % (self.matricula, self.categoria, self.plazas)
 
+
 class Solicitudes (models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    origen = models.CharField(max_length=25, blank=False)
-    destino = models.CharField(max_length=25, blank=False)
+    origen = models.CharField(max_length=30, blank=False)
+    destino = models.CharField(max_length=30, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=False)
-    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.DO_NOTHING)
     fechaHoraLlegada = models.DateTimeField(blank=False)
     STATES_CHOICES = {
         ('PE', 'Pending'),
@@ -52,11 +57,12 @@ class Solicitudes (models.Model):
         ('R', 'Rejected'),
         ('PA', 'Passed'),
     }
-    estado = models.CharField(max_length=2, choices=STATES_CHOICES)
+    estado = models.CharField(max_length=2, choices=STATES_CHOICES, default="PE")
     precio = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return '%s %s %s %s %s' % (self.origen, self.destino, self.fechaHoraSalida, self.fechaHoraLlegada, self.usuario)
+
 
 class Conductores(models.Model):
     dni = models.CharField(max_length=9, primary_key=True, default=0)
@@ -79,12 +85,12 @@ class Conductores(models.Model):
     def __str__(self):
         return '%s %s %s %s' % (self.dni, self.name, self.last_name, self.permisoConduccion)
 
+
 class Rutas (models.Model):
     origen = models.CharField(max_length=25, blank=False, unique=False)
     destino = models.CharField(max_length=25, blank=False, unique=False)
     vehiculo = models.ForeignKey(Vehiculos, related_name="rutas", on_delete=models.DO_NOTHING)
-    #paradas = models.ForeignKey(Paradas, related_name="rutas", on_delete=models.DO_NOTHING)
-    #conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.CASCADE)
+    #conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.DO_NOTHING)
     
     def __str__(self):
         return '%s %s' % (self.origen, self.destino)
@@ -108,11 +114,12 @@ class Tarificacion (models.Model):
     def __str__(self):
         return '%s %s ' % (self.userType, self.discount)
 
+
 class Paradas (models.Model):
     coordenadas = models.CharField(primary_key=True, max_length=255) #latitud, longitud
     fechaHora = models.DateTimeField()
-    solicitudes = models.ManyToManyField(Solicitudes, related_name="paradas", blank=True)
-    rutas = models.ManyToManyField(Rutas, related_name="paradas", blank=True)
+    solicitudes = models.ForeignKey(Solicitudes, related_name="paradas", blank=True, on_delete=models.DO_NOTHING)
+    rutas = models.ForeignKey(Rutas, related_name="rutas", blank=True, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return '%s %s ' % (self.coordenadas, self.fechaHora)

@@ -6,12 +6,12 @@ from movility.serializers import *
 from movility.utils.VroomRequest import VroomRequest
 import requests
 
-def name_to_coordinates(search_string, alldata=False):
-    from OSMPythonTools.nominatim import Nominatim
-    nominatim = Nominatim()
-    response = nominatim.query(search_string).toJSON() # json["matches_number"]["info_parameter"]
-    if (alldata): return response
-    else: return str(response[0]["lat"]) + ", " + str(response[0]["lon"])
+# def name_to_coordinates(search_string, alldata=False): # TODO do this in Front-end
+#     from OSMPythonTools.nominatim import Nominatim
+#     nominatim = Nominatim()
+#     response = nominatim.query(search_string).toJSON() # json["matches_number"]["info_parameter"]
+#     if (alldata): return response
+#     else: return str(response[0]["lat"]) + ", " + str(response[0]["lon"])
 
 def generate_vroom_request(): #TODO
     
