@@ -57,11 +57,6 @@ def usuarios_detail(request, pk, format=None):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    if request.method=='GET':
-        user=Usuarios.objects.get(id=id)
-        serializer = UsuariosSerializer(user)
-        return Response(serializer.data)
-
 """""""""""""""""""""""""""
         Vehiculos
 """""""""""""""""""""""""""
@@ -107,11 +102,6 @@ def vehiculos_detail(request, pk, format=None):
         vehiculo.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    if request.method=='GET':
-        vehiculo=Vehiculos.objects.get(id=id)
-        serializer = VehiculosSerializer(vehiculo)
-        return Response(serializer.data)
-
 
 """""""""""""""""""""""""""
         Solicitudes
@@ -126,8 +116,16 @@ def solicitudes_list(request, format=None):
         serializer = SolicitudesSerializer(solicitudes, many=True)
         return Response(serializer.data)
 
-    elif request.method == 'POST': #request = { usuario, origen, destino, fecha-salida, fecha-llegada }
-        serializer = SolicitudesSerializer(data=request.data)
+    elif request.method == 'POST': #request = { usuario, origen, destino, fechaHoraSalida, fechaHoraLlegada }
+        new_data = {
+            "origen":request.data["origen"],
+            "destino":request.data["destino"],
+            "fechaHoraSalida":request.data["fechaHoraSalida"], #TODO date format
+            "usuario":request.data["usuario"],
+            "fechaHoraLlegada":request.data["fechaHoraLlegada"],
+            "precio":5 #TODO
+        }
+        serializer = SolicitudesSerializer(data=new_data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -157,11 +155,6 @@ def solicitudes_detail(request, pk, format=None):
     elif request.method == 'DELETE':
         solicitud.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    if request.method=='GET':
-        solicitud=Solicitudes.objects.get(id=id)
-        serializer = SolicitudesSerializer(solicitud)
-        return Response(serializer.data)
 
 """""""""""""""""""""""""""
         Conductores
@@ -207,11 +200,6 @@ def conductores_detail(request, pk, format=None):
     elif request.method == 'DELETE':
         conductores.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    if request.method=='GET':
-        rutas=Conductores.objects.get(id=id)
-        serializer = ConductoresSerializer(conductores)
-        return Response(serializer.data)
 
 
 """""""""""""""""""""""""""
@@ -259,11 +247,6 @@ def tarificacion_detail(request, pk, format=None):
         tarificacion.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    if request.method=='GET':
-        rutas=Tarificacion.objects.get(id=id)
-        serializer = TarificacionSerializer(tarificacion)
-        return Response(serializer.data)
-
 
 """""""""""""""""""""""""""
         Paradas
@@ -310,11 +293,6 @@ def paradas_detail(request, pk, format=None):
         paradas.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    if request.method=='GET':
-        paradas=Paradas.objects.get(id=id)
-        serializer = ParadasSerializer(paradas)
-        return Response(serializer.data)
-
 
 """""""""""""""""""""""""""
         Rutas
@@ -360,11 +338,6 @@ def rutas_detail(request, pk, format=None):
     elif request.method == 'DELETE':
         rutas.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    if request.method=='GET':
-        rutas=Rutas.objects.get(id=id)
-        serializer = RutasSerializer(rutas)
-        return Response(serializer.data)
 
 @api_view(['GET'])
 def test_vroom(request): #TODO remove
