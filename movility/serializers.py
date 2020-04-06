@@ -150,7 +150,6 @@ class ConductoresSerializer(serializers.ModelSerializer):
     tlf = serializers.CharField(required=True)
     gender = serializers.CharField(required=False)
     permisoConduccion = serializers.CharField(required=True)
-    rutas = RutasSerializer(many=True)
 
     def create(self, validated_data):
         """

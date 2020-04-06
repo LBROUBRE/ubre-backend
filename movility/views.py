@@ -367,8 +367,7 @@ def rutas_detail(request, pk, format=None):
         return Response(serializer.data)
 
 @api_view(['GET'])
-def _test_(request): #TODO remove
+def test_vroom(request): #TODO remove
     if request.method=='GET':
-        new_route = routes.generate_route_from_dbrequests()
-        return Response()
-
+        vroom_request = routes.generate_vroom_request()
+        return Response(vroom_request.get_request())
