@@ -5,11 +5,12 @@ from rest_framework import serializers
         Solicitudes
 """""""""""""""""""""""""""
 class SolicitudesSerializer(serializers.ModelSerializer):
+    origen = serializers.UUIDField(required=True)
     origen = serializers.CharField(required=True)
     destino = serializers.CharField(required=True)
     fechaHoraSalida = serializers.DateTimeField(required=True)
     fechaHoraLlegada = serializers.DateTimeField()
-    estado = serializers.CharField(required=True)
+    estado = serializers.CharField(required=False)
     precio = serializers.IntegerField(required=True)
 
     def create(self, validated_data):
@@ -48,7 +49,7 @@ class UsuariosSerializer(serializers.ModelSerializer):
     tlf = serializers.CharField(required=True)
     age = serializers.IntegerField(required=False)
     gender = serializers.CharField(required=False)
-    solicitudes = SolicitudesSerializer(many=True)
+    solicitudes = SolicitudesSerializer(many=True, required=False)
 
     def create(self, validated_data):
         """
@@ -113,7 +114,7 @@ class VehiculosSerializer(serializers.ModelSerializer):
     consumo = serializers.IntegerField(required=True)
     motor = serializers.CharField(required=True)
     categoria = serializers.CharField(required=True)
-    rutas = RutasSerializer(many=True)
+    rutas = RutasSerializer(many=True, required=False)
 
     def create(self, validated_data):
         """
@@ -135,7 +136,7 @@ class VehiculosSerializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = Rutas
+        model = Vehiculos
         fields = "__all__"
         extra_kwargs = {'rutas':{'required': False}}
 
