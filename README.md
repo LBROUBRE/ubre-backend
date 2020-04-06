@@ -3,7 +3,7 @@
 Necesita de una base de datos externa PostgreSQL. Lo primero que hay que hacer es instalarla (si no la tenemos ya) en Ubuntu 18.04 LTS:
 ```
 sudo apt update
-sudo apt install postgresql postgresql-contrib
+sudo apt install postgresql postgresql-contrib libpq-dev
 ```
 
 Instalar el conector para PostgreSQL.
@@ -23,9 +23,10 @@ GRANT ALL PRIVILEGES ON DATABASE ubre TO ubre;
 Ahora que tenemos el usuario y la base de datos creada tenemos que ir a un fichero específico para cambiar un ajuste de inicio, para que nos pida la contraseña para este usuario.
 ```
 sudo nano /etc/postgresql/10/main/pg_hba.conf
-En la parte donde pone: " 'local' is for Unix domain..." cambiamos la línea inmediatamente posterior de: local all all peer > local all all md5
-Guardamos y salimos del documento.
+sudo service postgresql restart
 ```
+En la parte donde pone: " 'local' is for Unix domain..." cambiamos la línea inmediatamente posterior: local all all peer > local all all md5
+Guardamos y salimos del documento.
 
 Para entrar a la base de datos PostgreSQL que hemos creado:
 ```
