@@ -18,8 +18,6 @@ class VroomResponseProcessor:
         self.request = request
         self.response = request.get_response()
 
-        self.routes = self.get_routes()
-
     def get_status_code(self):
         return self.response["code"]
 
@@ -27,7 +25,6 @@ class VroomResponseProcessor:
         return self.response["error"]
 
     def get_routes(self):
-        print(self.response)
         request_routes = self.response["routes"]
         routes = []
         for request_route in request_routes:
@@ -45,11 +42,12 @@ class VroomResponseProcessor:
 
             steps = []
             for request_step in request_steps:
-                step["coordenadas"] = "%f, %f" % (request_step["location"][0], request_step["location"][1])
-                step["fechaHora"] = "2020-04-06 18:00:31+00:00"  # TODO: se hace lo que se puede
-                step["solicitudes"] = self.request.get_request_id(request_step["job"])
+                new_step = dict()
+                new_step["coordenadas"] = "%f, %f" % (request_step["location"][0], request_step["location"][1])
+                new_step["fechaHora"] = "2020-04-06 18:00:31+00:00"  # TODO: se hace lo que se puede
+                new_step["solicitudes"] = self.request.get_request_id(request_step["job"])
 
-                steps.append(step)
+                steps.append(new_step)
 
             route["paradas"] = steps
 

@@ -95,14 +95,3 @@ class VroomRequest:
                 "location": delivery_location_array
             }
         })
-        print({
-            "amount": [amount],
-            "pickup": {
-                "id": pickup_id,
-                "location": pickup_location_array
-            },
-            "delivery": {
-                "id": delivery_id,
-                "location": delivery_location_array
-            }
-        })

@@ -42,9 +42,9 @@ def process_vroom_routing(request):
 
     routes = vroom_response_processor.get_routes()
     for route in routes:
-        print(route)
         res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
-        print(res)
+
+    print("[utils/routes.py/process_vroom_routing] Added to DB %i routes" % len(routes))
 
 
 def vroom_call():
