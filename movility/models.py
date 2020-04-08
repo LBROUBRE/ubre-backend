@@ -88,6 +88,7 @@ class Conductores(models.Model):
 class Rutas(models.Model):
     origen = models.CharField(max_length=25, blank=False, unique=False)
     destino = models.CharField(max_length=25, blank=False, unique=False)
+    geometry = models.CharField(max_length=131072, blank=False, unique=False)
     vehiculo = models.ForeignKey(Vehiculos, default=None, related_name="rutas", on_delete=models.DO_NOTHING)
 
     # conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.DO_NOTHING)

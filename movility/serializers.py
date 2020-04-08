@@ -111,6 +111,7 @@ class ParadasSerializer(serializers.ModelSerializer):
 class RutasSerializer(serializers.ModelSerializer):
     origen = serializers.CharField(required=True) # identificador de la ubicación
     destino = serializers.CharField(required=True) # identificador de la ubicación
+    geometry = serializers.CharField()
     paradas = ParadasSerializer(many=True)
 
     def create(self, validated_data):
@@ -120,6 +121,7 @@ class RutasSerializer(serializers.ModelSerializer):
         ruta = Rutas.objects.create(
             origen=validated_data.get("origen"),
             destino=validated_data.get("destino"),
+            geometry=validated_data.get("geometry"),
             vehiculo=validated_data.get("vehiculo")
         )
         ruta.save()

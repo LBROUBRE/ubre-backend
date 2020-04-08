@@ -24,9 +24,6 @@ class VroomRequest:
     def get_response(self):
         # example ={"vehicles":[{"id":0,"start":[2.3526,48.8604],"end":[2.3526,48.8604]}],
         # "jobs":[{"id":0, "location":[2.3691,48.8532]},{"id":1,"location":[2.2911,48.8566]}],"options":{"g":True}}
-        print("-------vroom request---------------\n")
-        print(self.vroom_request)
-        print("\n----------------------")
         res = rest.post("http://localhost:3000/", json=self.vroom_request)
         return res.json()
 
@@ -112,11 +109,3 @@ class VroomRequest:
             "pickup": pickup,
             "delivery": delivery
         })
-        '''
-        print("-------------------------------\n")
-        print({
-            "amount": [amount],
-            "pickup": pickup,
-            "delivery": delivery
-        })
-        print("\n-------------------------------")'''

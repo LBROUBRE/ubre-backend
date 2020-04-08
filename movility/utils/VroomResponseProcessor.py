@@ -29,18 +29,15 @@ class VroomResponseProcessor:
         routes = []
         for request_route in request_routes:
 
-            print("-------------------------------\n")
-            print(request_route)
-            print("\n-------------------------------")
-
             vehicle_id = request_route["vehicle"]
             route["vehiculo"] = self.request.get_vehicle_id(vehicle_id)
+            route["geometry"] = request_route["geometry"]
 
             request_steps = request_route["steps"]
             route["origen"] = "%f, %f" % (request_steps[0]["location"][0], request_steps[0]["location"][1])
             route["destino"] = "%f, %f" % (request_steps[-1]["location"][0], request_steps[-1]["location"][1])
 
-            # TODO: maybe this is not exactly the best way to remove the start/end steps, can we make a loop? (worth)
+            # TODO: maybe this is not exactly the best way to remove the start/end steps, can we make a loop? (worth?)
             request_steps.remove(request_steps[-1])
             request_steps.remove(request_steps[0])
 
