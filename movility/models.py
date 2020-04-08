@@ -47,9 +47,9 @@ class Vehiculos(models.Model):
 class Solicitudes(models.Model):
     origen = models.CharField(max_length=30, blank=False)
     destino = models.CharField(max_length=30, blank=False)
-    fechaHoraSalida = models.DateTimeField(blank=False)
+    fechaHoraSalida = models.DateTimeField(blank=True, default=None)
+    fechaHoraLlegada = models.DateTimeField(blank=True, default=None)
     usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.DO_NOTHING)
-    fechaHoraLlegada = models.DateTimeField(blank=False)
     STATES_CHOICES = {
         ('PE', 'Pending'),
         ('A', 'Accepted'),
@@ -88,7 +88,7 @@ class Conductores(models.Model):
 class Rutas(models.Model):
     origen = models.CharField(max_length=25, blank=False, unique=False)
     destino = models.CharField(max_length=25, blank=False, unique=False)
-    vehiculo = models.ForeignKey(Vehiculos, blank=True, null=True, related_name="rutas", on_delete=models.DO_NOTHING)
+    vehiculo = models.ForeignKey(Vehiculos, default=None, related_name="rutas", on_delete=models.DO_NOTHING)
 
     # conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.DO_NOTHING)
 

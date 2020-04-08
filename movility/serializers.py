@@ -8,7 +8,7 @@ from rest_framework import serializers
 class SolicitudesSerializer(serializers.ModelSerializer):
     origen = serializers.CharField(required=True)
     destino = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateTimeField(required=True)
+    fechaHoraSalida = serializers.DateTimeField()
     fechaHoraLlegada = serializers.DateTimeField()
     estado = serializers.CharField(required=True)
     precio = serializers.IntegerField(required=True)
@@ -119,7 +119,8 @@ class RutasSerializer(serializers.ModelSerializer):
         """
         ruta = Rutas.objects.create(
             origen=validated_data.get("origen"),
-            destino=validated_data.get("destino")
+            destino=validated_data.get("destino"),
+            vehiculo=validated_data.get("vehiculo")
         )
         ruta.save()
         paradas = validated_data.get('paradas')

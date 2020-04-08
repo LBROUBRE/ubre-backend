@@ -24,6 +24,9 @@ class VroomRequest:
     def get_response(self):
         # example ={"vehicles":[{"id":0,"start":[2.3526,48.8604],"end":[2.3526,48.8604]}],
         # "jobs":[{"id":0, "location":[2.3691,48.8532]},{"id":1,"location":[2.2911,48.8566]}],"options":{"g":True}}
+        print("-------vroom request---------------\n")
+        print(self.vroom_request)
+        print("\n----------------------")
         res = rest.post("http://localhost:3000/", json=self.vroom_request)
         return res.json()
 
@@ -71,7 +74,7 @@ class VroomRequest:
             "capacity": [capacity]
         })
 
-    def add_shipment(self, db_request_id, pickup_location, delivery_location, amount=1):
+    def add_shipment(self, db_request_id, pickup_location, delivery_location, pickup_date=None, delivery_date=None, amount=1):
         
         pickup_id = next(self.job_id_generator)
         delivery_id = next(self.job_id_generator)
@@ -84,14 +87,36 @@ class VroomRequest:
 
         pickup_location_array = [float(pickup_location.split(",")[0]), float(pickup_location.split(",")[1])]
         delivery_location_array = [float(delivery_location.split(",")[0]), float(delivery_location.split(",")[1])]
+
+        pickup = {
+            "id": pickup_id,
+            "location": pickup_location_array
+        }
+        delivery = {
+            "id": delivery_id,
+            "location": delivery_location_array
+        }
+
+        if pickup_date is not None:
+            pickup_date_seconds = pickup_date.timestamp()
+            pickup_date_array = [pickup_date_seconds, pickup_date_seconds + 600]  # The pickup can start 10min late max.
+            pickup["time_windows"] = [pickup_date_array]
+
+        if delivery_date is not None:
+            delivery_date_seconds = delivery_date.timestamp()
+            delivery_date_array = [delivery_date_seconds - 600, delivery_date_seconds]  # The delivery can be 10m early
+            delivery["time_windows"] = [delivery_date_array]
+
         self.vroom_request["shipments"].append({
             "amount": [amount],
-            "pickup": {
-                "id": pickup_id,
-                "location": pickup_location_array
-            },
-            "delivery": {
-                "id": delivery_id,
-                "location": delivery_location_array
-            }
+            "pickup": pickup,
+            "delivery": delivery
         })
+        '''
+        print("-------------------------------\n")
+        print({
+            "amount": [amount],
+            "pickup": pickup,
+            "delivery": delivery
+        })
+        print("\n-------------------------------")'''

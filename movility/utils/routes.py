@@ -13,7 +13,7 @@ from movility.utils.VroomRequest import VroomRequest
 #     else: return str(response[0]["lat"]) + ", " + str(response[0]["lon"])
 
 
-def generate_vroom_request():  # TODO
+def generate_vroom_request():
     
     # get all instances of Solicitudes, Vehiculos and Conductores in the DB
     reqs = Solicitudes.objects.all()
@@ -24,7 +24,8 @@ def generate_vroom_request():  # TODO
     
     # get all "paradas" in all Solicitudes instances;
     for req in reqs.iterator():
-        vroom_request.add_shipment(req.id, req.origen, req.destino, amount=1)  # TODO?: origen y destino -> [lon, lat]
+        vroom_request.add_shipment(req.id, req.origen, req.destino, req.fechaHoraSalida, req.fechaHoraLlegada, amount=1)
+        # TODO?: origen y destino -> [lon, lat]
 
     # get all buses in Vehiculos instances
     for bus in buses.iterator():
@@ -37,11 +38,11 @@ def process_vroom_routing(request):
     import requests as rest
     from movility.utils.VroomResponseProcessor import VroomResponseProcessor
 
-    response = request.get_response()
     vroom_response_processor = VroomResponseProcessor(request)
 
     routes = vroom_response_processor.get_routes()
     for route in routes:
+        print("\n\n\n %s \n\n\n" % route)
         res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
 
     print("[utils/routes.py/process_vroom_routing] Added to DB %i routes" % len(routes))

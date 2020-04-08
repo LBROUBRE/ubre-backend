@@ -29,6 +29,10 @@ class VroomResponseProcessor:
         routes = []
         for request_route in request_routes:
 
+            print("-------------------------------\n")
+            print(request_route)
+            print("\n-------------------------------")
+
             vehicle_id = request_route["vehicle"]
             route["vehiculo"] = self.request.get_vehicle_id(vehicle_id)
 
@@ -36,15 +40,17 @@ class VroomResponseProcessor:
             route["origen"] = "%f, %f" % (request_steps[0]["location"][0], request_steps[0]["location"][1])
             route["destino"] = "%f, %f" % (request_steps[-1]["location"][0], request_steps[-1]["location"][1])
 
-            # TODO: maybe this is not exactly the best way to remove the start/end steps
+            # TODO: maybe this is not exactly the best way to remove the start/end steps, can we make a loop? (worth)
             request_steps.remove(request_steps[-1])
             request_steps.remove(request_steps[0])
 
             steps = []
             for request_step in request_steps:
+                from datetime import datetime
                 new_step = dict()
                 new_step["coordenadas"] = "%f, %f" % (request_step["location"][0], request_step["location"][1])
-                new_step["fechaHora"] = "2020-04-06 18:00:31+00:00"  # TODO: se hace lo que se puede
+                date = datetime.fromtimestamp(request_step["arrival"])
+                new_step["fechaHora"] = date.strftime('%Y-%m-%dT%H:%M:%SZ')
                 new_step["solicitudes"] = self.request.get_request_id(request_step["job"])
 
                 steps.append(new_step)
