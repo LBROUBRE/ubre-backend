@@ -23,7 +23,6 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        print(instance)
         if 'origen' in validated_data:
             instance.origen = validated_data.get('origen', instance.origen)
         if 'destino' in validated_data:
@@ -50,14 +49,14 @@ class SolicitudesSerializer(serializers.ModelSerializer):
 """""""""""""""""""""""""""
 
 class UsuariosSerializer(serializers.ModelSerializer):
-    dni = serializers.CharField(required=True)
-    name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
-    tlf = serializers.CharField(required=True)
+    dni = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    tlf = serializers.CharField(required=False)
     age = serializers.IntegerField(required=False)
     gender = serializers.CharField(required=False)
-    solicitudes = SolicitudesSerializer(many=True)
+    solicitudes = SolicitudesSerializer(many=False)
 
     def create(self, validated_data):
         """
@@ -69,12 +68,18 @@ class UsuariosSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de Solicitud creada, dado un 'validated_data'
         """
-        instance.name = validated_data.get('name', instance.name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.tlf = validated_data.get('tlf', instance.tlf)
-        instance.age = validated_data.get('age', instance.age)
-        instance.gender = validated_data.get('gender', instance.gender)
+        if 'name' in validated_data:
+            instance.name = validated_data.get('name', instance.name)
+        if 'last_name' in validated_data:
+            instance.last_name = validated_data.get('last_name', instance.last_name)
+        if 'email' in validated_data:
+            instance.email = validated_data.get('email', instance.email)
+        if 'tlf' in validated_data:
+            instance.tlf = validated_data.get('tlf', instance.tlf)
+        if 'age' in validated_data:
+            instance.age = validated_data.get('age', instance.age)
+        if 'gender' in validated_data:
+            instance.gender = validated_data.get('gender', instance.gender)
         instance.save()
         return instance
 
@@ -88,8 +93,8 @@ class UsuariosSerializer(serializers.ModelSerializer):
         Paradas
 """""""""""""""""""""""""""
 class ParadasSerializer(serializers.ModelSerializer):
-    coordenadas = serializers.CharField(required=True)
-    fechaHora = serializers.DateTimeField(required=True)
+    coordenadas = serializers.CharField(required=False)
+    fechaHora = serializers.DateTimeField(required=False)
 
     def create(self, validated_data):
         """
@@ -101,8 +106,10 @@ class ParadasSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.coordenadas = validated_data.get('coordenadas', instance.coordenadas)
-        instance.fechaHora = validated_data.get('fechaHora', instance.fechaHora)
+        if 'coordenadas' in validated_data:
+            instance.coordenadas = validated_data.get('coordenadas', instance.coordenadas)
+        if 'fechaHora' in validated_data:
+            instance.fechaHora = validated_data.get('fechaHora', instance.fechaHora)        
         instance.save()
         return instance
 
@@ -116,9 +123,9 @@ class ParadasSerializer(serializers.ModelSerializer):
         Rutas
 """""""""""""""""""""""""""
 class RutasSerializer(serializers.ModelSerializer):
-    origen = serializers.CharField(required=True) # identificador de la ubicación
-    destino = serializers.CharField(required=True) # identificador de la ubicación
-    geometry = serializers.CharField()
+    origen = serializers.CharField(required=False) # identificador de la ubicación
+    destino = serializers.CharField(required=False) # identificador de la ubicación
+    geometry = serializers.CharField(required=False)
     paradas = ParadasSerializer(many=True)
 
     def create(self, validated_data):
@@ -141,8 +148,12 @@ class RutasSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.origen = validated_data('origen', instance.origen)
-        instance.destino = validated_data('destino', instance.destino)
+        if 'origen' in validated_data:
+            instance.origen = validated_data.get('origen', instance.origen)
+        if 'destino' in validated_data:
+            instance.destino = validated_data.get('destino', instance.destino)
+        if 'geometry' in validated_data:
+            instance.geometry = validated_data.get('geometry', instance.geometry)
         instance.save()
         return instance
 
@@ -174,12 +185,18 @@ class VehiculosSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.matricula = validated_data('matricula', instance.matricula)
-        instance.modelo = validated_data('modelo', instance.modelo)
-        instance.plazas = validated_data('plazas', instance.plazas)
-        instance.consumo = validated_data.get('consumo', instance.consumo)
-        instance.motor = validated_data.get('motor', instance.motor)
-        instance.categoria = validated_data.get('categoria', instance.categoria)
+        if 'matricula' in validated_data:
+            instance.matricula = validated_data.get('matricula', instance.matricula)
+        if 'modelo' in validated_data:
+            instance.modelo = validated_data.get('modelo', instance.modelo)
+        if 'plazas' in validated_data:
+            instance.plazas = validated_data.get('plazas', instance.plazas)
+        if 'consumo' in validated_data:
+            instance.consumo = validated_data.get('consumo', instance.consumo)
+        if 'motor' in validated_data:
+            instance.motor = validated_data.get('motor', instance.motor)
+        if 'categoria' in validated_data:
+            instance.categoria = validated_data.get('categoria', instance.categoria)
         instance.save()
         return instance
 
@@ -192,13 +209,13 @@ class VehiculosSerializer(serializers.ModelSerializer):
         Conductores
 """""""""""""""""""""""""""
 class ConductoresSerializer(serializers.ModelSerializer):
-    dni = serializers.CharField(required=True)
-    name = serializers.CharField(required=True)
-    last_name = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
-    tlf = serializers.CharField(required=True)
+    dni = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    email = serializers.EmailField(required=False)
+    tlf = serializers.CharField(required=False)
     gender = serializers.CharField(required=False)
-    permisoConduccion = serializers.CharField(required=True)
+    permisoConduccion = serializers.CharField(required=False)
     rutas = RutasSerializer(many=True)
 
     def create(self, validated_data):
@@ -211,12 +228,20 @@ class ConductoresSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.name = validated_data.get('name', instance.name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.email = validated_data.get('email', instance.email)
-        instance.tlf = validated_data.get('tlf', instance.tlf)
-        instance.gender = validated_data.get('gender', instance.gender)
-        instance.permisoConduccion = validated_data.get('permisoConduccion', instance.permisoConduccion)
+        if 'dni' in validated_data:
+            instance.dni = validated_data.get('dni', instance.dni)
+        if 'name' in validated_data:
+            instance.name = validated_data.get('name', instance.name)
+        if 'last_name' in validated_data:
+            instance.last_name = validated_data.get('last_name', instance.last_name)
+        if 'email' in validated_data:
+            instance.email = validated_data.get('email', instance.email)
+        if 'tlf' in validated_data:
+            instance.tlf = validated_data.get('tlf', instance.tlf)
+        if 'gender' in validated_data:
+            instance.gender = validated_data.get('gender', instance.gender)
+        if 'permisoConduccion' in validated_data:
+            instance.permisoConduccion = validated_data.get('permisoConduccion', instance.permisoConduccion)            
         instance.save()
         return instance
 
@@ -242,8 +267,10 @@ class TarificacionSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.user_type = validated_data.get('user_type', instance.user_type)
-        instance.discount = validated_data.get('discount', instance.discount)
+        if 'user_type' in validated_data:
+            instance.user_type = validated_data.get('user_type', instance.user_type)
+        if 'discount' in validated_data:
+            instance.discount = validated_data.get('discount', instance.discount)
         instance.save()
         return instance
 

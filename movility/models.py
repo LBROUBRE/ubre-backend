@@ -49,7 +49,7 @@ class Solicitudes(models.Model):
     destino = models.CharField(max_length=30, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=True, default=None)
     fechaHoraLlegada = models.DateTimeField(blank=True, default=None)
-    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.DO_NOTHING)
+    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.CASCADE)
     STATES_CHOICES = {
         ('PE', 'Pending'),
         ('A', 'Accepted'),
@@ -90,7 +90,6 @@ class Rutas(models.Model):
     destino = models.CharField(max_length=25, blank=False, unique=False)
     geometry = models.CharField(max_length=131072, blank=False, unique=False)
     vehiculo = models.ForeignKey(Vehiculos, default=None, related_name="rutas", on_delete=models.DO_NOTHING)
-
     # conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.DO_NOTHING)
 
     def __str__(self):
@@ -115,7 +114,7 @@ class Paradas(models.Model):
     coordenadas = models.CharField(max_length=255)  # latitud, longitud
     fechaHora = models.DateTimeField()
     solicitudes = models.ForeignKey(Solicitudes, related_name="paradas", null=True, blank=True,
-                                    on_delete=models.DO_NOTHING)
+                                    on_delete=models.CASCADE)
     rutas = models.ForeignKey(Rutas, related_name="paradas", blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
