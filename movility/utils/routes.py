@@ -24,7 +24,8 @@ def generate_vroom_request():
     
     # get all "paradas" in all Solicitudes instances;
     for req in reqs.iterator():
-        vroom_request.add_shipment(req.id, req.origen, req.destino, req.fechaHoraSalida, req.fechaHoraLlegada, amount=1)
+        vroom_request.add_shipment(req.id, req.origen, req.destino, req.estado,
+                                   req.fechaHoraSalida, req.fechaHoraLlegada, amount=1)
         # TODO?: origen y destino -> [lon, lat]
 
     # get all buses in Vehiculos instances
@@ -42,10 +43,13 @@ def process_vroom_routing(request):
 
     routes = vroom_response_processor.get_routes()
     for route in routes:
-        print("\n\n\n %s \n\n\n" % route)
         res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
-
-    print("[utils/routes.py/process_vroom_routing] Added to DB %i routes" % len(routes))
+        for step in route["paradas"]:
+            json = {
+                "state": 'A'
+            }
+            request_id = step["solicitudes"]
+            res = rest.put("http://127.0.0.1:8000/movility/request/updatestate/%i" % request_id, json=json)
 
 
 def vroom_call():

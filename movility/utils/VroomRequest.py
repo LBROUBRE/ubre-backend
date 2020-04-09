@@ -54,7 +54,8 @@ class VroomRequest:
     def add_jobs(self):
         pass
         
-    def add_vehicle(self, db_vehicle_id, start=DEFAULT_VEHICLE_STATION, end=DEFAULT_VEHICLE_STATION, profile="car", capacity=8):
+    def add_vehicle(self, db_vehicle_id, start=DEFAULT_VEHICLE_STATION, end=DEFAULT_VEHICLE_STATION,
+                    profile="car", capacity=8):
         
         vehicle_id = next(self.vehicle_id_generator)
         
@@ -71,16 +72,25 @@ class VroomRequest:
             "capacity": [capacity]
         })
 
-    def add_shipment(self, db_request_id, pickup_location, delivery_location, pickup_date=None, delivery_date=None, amount=1):
-        
+    def add_shipment(self, db_request_id, pickup_location, delivery_location, state,
+                     pickup_date=None, delivery_date=None, amount=1):
+
+        if state == 'PA' and state == 'R':
+            return  # If the request is already closed (passed or rejected) we can ignore it
+
         pickup_id = next(self.job_id_generator)
         delivery_id = next(self.job_id_generator)
-        
-        self.shipments.append({
+
+        shipment = {
             "request": db_request_id,
             "pickup": pickup_id,
             "delivery": delivery_id
-        })
+        }
+
+        if state == 'A':
+            shipment["priority"] = 1  # If the request was already accepted we must prioritize it
+
+        self.shipments.append(shipment)
 
         pickup_location_array = [float(pickup_location.split(",")[0]), float(pickup_location.split(",")[1])]
         delivery_location_array = [float(delivery_location.split(",")[0]), float(delivery_location.split(",")[1])]
