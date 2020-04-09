@@ -6,12 +6,12 @@ from rest_framework import serializers
         Solicitudes
 """""""""""""""""""""""""""
 class SolicitudesSerializer(serializers.ModelSerializer):
-    origen = serializers.CharField(required=True)
-    destino = serializers.CharField(required=True)
-    fechaHoraSalida = serializers.DateTimeField()
-    fechaHoraLlegada = serializers.DateTimeField()
-    estado = serializers.CharField(required=True)
-    precio = serializers.IntegerField(required=True)
+    origen = serializers.CharField(required=False)
+    destino = serializers.CharField(required=False)
+    fechaHoraSalida = serializers.DateTimeField(required=False)
+    fechaHoraLlegada = serializers.DateTimeField(required=False)
+    estado = serializers.CharField(required=False)
+    precio = serializers.IntegerField(required=False)
 
     def create(self, validated_data):
         """
@@ -23,12 +23,19 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         """
         Actualiza y retorna la instancia de User creada, dado un 'validated_data'
         """
-        instance.origen = validated_data('origen', instance.origen)
-        instance.destino = validated_data('destino', instance.destino)
-        instance.fechaHoraSalida = validated_data('fechaHoraSalida', instance.fechaHoraSalida)
-        instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
-        instance.estado = validated_data.get('estado', instance.estado)
-        instance.precio = validated_data.get('precio', instance.precio)
+        print(instance)
+        if 'origen' in validated_data:
+            instance.origen = validated_data.get('origen', instance.origen)
+        if 'destino' in validated_data:
+            instance.destino = validated_data.get('destino', instance.destino)
+        if 'fechaHoraSalida' in validated_data:
+            instance.fechaHoraSalida = validated_data.get('fechaHoraSalida', instance.fechaHoraSalida)
+        if 'fechaHoraLlegada' in validated_data:
+            instance.fechaHoraLlegada = validated_data.get('fechaHoraLlegada', instance.fechaHoraLlegada)
+        if 'estado' in validated_data:
+            instance.estado = validated_data.get('estado', instance.estado)
+        if 'precio' in validated_data:
+            instance.precio = validated_data.get('precio', instance.precio)
         instance.save()
         return instance
 

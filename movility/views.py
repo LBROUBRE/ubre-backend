@@ -156,22 +156,6 @@ def solicitudes_detail(request, pk, format=None):
         solicitud.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['PUT'])
-def solicitud_state_update(request, pk, format=None):
-    try:
-        user = Solicitudes.objects.get(pk=pk)
-    except Solicitudes.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    if request.method == 'PUT':
-        serializer_get = SolicitudesSerializer(user)
-        new_data = serializer_get.data
-        new_data["estado"]=request.data["state"]
-        serializer_put = SolicitudesSerializer(user, data=new_data)
-        if serializer_put.is_valid():
-            serializer_put.save()
-            return Response(serializer_put.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 """""""""""""""""""""""""""
         Conductores
 """""""""""""""""""""""""""
