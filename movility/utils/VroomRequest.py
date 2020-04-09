@@ -24,12 +24,13 @@ class VroomRequest:
     def get_response(self):
         # example ={"vehicles":[{"id":0,"start":[2.3526,48.8604],"end":[2.3526,48.8604]}],
         # "jobs":[{"id":0, "location":[2.3691,48.8532]},{"id":1,"location":[2.2911,48.8566]}],"options":{"g":True}}
+        print(self.vroom_request)
         res = rest.post("http://localhost:3000/", json=self.vroom_request)
         return res.json()
 
-    def get_vehicle_id(self, vrooom_vehicle_id):
+    def get_vehicle_id(self, vroom_vehicle_id):
         for vehicle in self.vehicles:
-            if vehicle["vroom_vehicle"] == vrooom_vehicle_id:
+            if vehicle["vroom_vehicle"] == vroom_vehicle_id:
                 return vehicle["db_vehicle"]
 
     def get_request_id(self, job_id):
@@ -75,22 +76,20 @@ class VroomRequest:
     def add_shipment(self, db_request_id, pickup_location, delivery_location, state,
                      pickup_date=None, delivery_date=None, amount=1):
 
-        if state == 'PA' and state == 'R':
+        print(state)
+        type(state)
+
+        if state == 'PA' or state == 'R':
             return  # If the request is already closed (passed or rejected) we can ignore it
 
         pickup_id = next(self.job_id_generator)
         delivery_id = next(self.job_id_generator)
 
-        shipment = {
+        self.shipments.append({
             "request": db_request_id,
             "pickup": pickup_id,
             "delivery": delivery_id
-        }
-
-        if state == 'A':
-            shipment["priority"] = 1  # If the request was already accepted we must prioritize it
-
-        self.shipments.append(shipment)
+        })
 
         pickup_location_array = [float(pickup_location.split(",")[0]), float(pickup_location.split(",")[1])]
         delivery_location_array = [float(delivery_location.split(",")[0]), float(delivery_location.split(",")[1])]
@@ -114,8 +113,14 @@ class VroomRequest:
             delivery_date_array = [delivery_date_seconds - 600, delivery_date_seconds]  # The delivery can be 10m early
             delivery["time_windows"] = [delivery_date_array]
 
-        self.vroom_request["shipments"].append({
+        shipment = {
             "amount": [amount],
             "pickup": pickup,
             "delivery": delivery
-        })
+        }
+
+        if state == "A":
+            print("AQUII")
+            shipment["priority"] = 1  # If the request was already accepted we must prioritize it
+
+        self.vroom_request["shipments"].append(shipment)

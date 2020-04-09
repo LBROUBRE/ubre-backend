@@ -46,10 +46,11 @@ def process_vroom_routing(request):
         res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
         for step in route["paradas"]:
             json = {
-                "state": 'A'
+                "estado": 'A'
             }
             request_id = step["solicitudes"]
-            res = rest.put("http://127.0.0.1:8000/movility/request/updatestate/%i" % request_id, json=json)
+            res = rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
+            print(res)
 
 
 def vroom_call():
