@@ -9,7 +9,6 @@ urlpatterns = [
     # Requests
     path('requests/', solicitudes_list),
     path('requests/<pk>', solicitudes_detail),
-    path('requests/updatestate/<pk>', solicitud_state_update),
 
     # Drivers
     path('drivers/', conductores_list),
