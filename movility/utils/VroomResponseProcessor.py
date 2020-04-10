@@ -28,6 +28,7 @@ class VroomResponseProcessor:
         request_routes = self.response["routes"]
         routes = []
         for request_route in request_routes:
+            route = dict()
 
             vehicle_id = request_route["vehicle"]
             route["vehiculo"] = self.request.get_vehicle_id(vehicle_id)
