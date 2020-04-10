@@ -41,6 +41,16 @@ class VroomResponseProcessor:
             request_steps.remove(request_steps[-1])
             request_steps.remove(request_steps[0])
 
+            if "unassigned" in self.response:
+                for request_unassigned in self.response["unassigned"]:  # We will set the unassigned request to rejected
+                    request_id = self.request.get_request_id(request_unassigned["id"])
+                    import requests as rest
+                    json = {
+                        "estado": 'R'
+                    }
+                    res = rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
+                    print(res)
+
             steps = []
             for request_step in request_steps:
                 from datetime import datetime
