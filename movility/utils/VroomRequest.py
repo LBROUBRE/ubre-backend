@@ -24,7 +24,6 @@ class VroomRequest:
     def get_response(self):
         # example ={"vehicles":[{"id":0,"start":[2.3526,48.8604],"end":[2.3526,48.8604]}],
         # "jobs":[{"id":0, "location":[2.3691,48.8532]},{"id":1,"location":[2.2911,48.8566]}],"options":{"g":True}}
-        print(self.vroom_request)
         res = rest.post("http://localhost:3000/", json=self.vroom_request)
         return res.json()
 
@@ -76,9 +75,6 @@ class VroomRequest:
     def add_shipment(self, db_request_id, pickup_location, delivery_location, state,
                      pickup_date=None, delivery_date=None, amount=1):
 
-        print(state)
-        type(state)
-
         if state == 'PA' or state == 'R':
             return  # If the request is already closed (passed or rejected) we can ignore it
 
@@ -120,7 +116,6 @@ class VroomRequest:
         }
 
         if state == "A":
-            print("AQUII")
             shipment["priority"] = 1  # If the request was already accepted we must prioritize it
 
         self.vroom_request["shipments"].append(shipment)

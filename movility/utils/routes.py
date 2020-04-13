@@ -50,14 +50,14 @@ def process_vroom_routing(request):
             }
             request_id = step["solicitudes"]
             res = rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
-            print(res)
+            
 
 
 def vroom_call():
 
     # Generates a Vroom request Object and fills it with th DB data
     request = generate_vroom_request()
-
+    
     # Process the Vroom response  and updates the DB with the data obtained
     process_vroom_routing(request)
 
