@@ -257,12 +257,12 @@ def paradas_list(request, format=None):
     Lista toda la Tarificación, o crea uno nuevo.
     """
     if request.method == 'GET':
-        paradas = Paradas.objects.all()
-        serializer = ParadasSerializer(paradas, many=True)
+        paradas = Steps.objects.all()
+        serializer = StepsSerializer(paradas, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = ParadasSerializer(data=request.data)
+        serializer = StepsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -274,16 +274,16 @@ def paradas_detail(request, pk, format=None):
     Obtiene, actualiza o borra una tarifa.
     """
     try:
-        paradas = Paradas.objects.get(pk=pk)
-    except Paradas.DoesNotExist:
+        paradas = Steps.objects.get(pk=pk)
+    except Steps.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = ParadasSerializer(paradas)
+        serializer = StepsSerializer(paradas)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = ParadasSerializer(paradas, data=request.data)
+        serializer = StepsSerializer(paradas, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
