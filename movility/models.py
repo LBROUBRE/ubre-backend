@@ -110,12 +110,20 @@ class Tarificacion(models.Model):
         return '%s %s ' % (self.userType, self.discount)
 
 
-class Paradas(models.Model):
-    coordenadas = models.CharField(max_length=255)  # latitud, longitud
-    fechaHora = models.DateTimeField()
-    solicitudes = models.ForeignKey(Solicitudes, related_name="paradas", null=True, blank=True,
-                                    on_delete=models.CASCADE)
-    rutas = models.ForeignKey(Rutas, related_name="paradas", blank=True, on_delete=models.CASCADE)
+class ParadasVirtuales(models.Model):
+    coordenadas = models.CharField(max_length=255, blank=False, unique=False)  # latitud, longitud
 
     def __str__(self):
-        return '%s %s ' % (self.coordenadas, self.fechaHora)
+        return '%s ' % self.coordenadas
+
+
+class Steps(models.Model):
+    parada = models.ForeignKey(ParadasVirtuales, related_name="steps", on_delete=models.CASCADE)  # latitud, longitud
+    fechaHora = models.DateTimeField()
+    solicitudes = models.ForeignKey(Solicitudes, related_name="steps", null=True, blank=True,
+                                    on_delete=models.CASCADE)
+    rutas = models.ForeignKey(Rutas, related_name="steps", blank=True, on_delete=models.CASCADE)  # TODO: to check
+
+    def __str__(self):
+        return '%s %s ' % (self.parada, self.fechaHora)
+

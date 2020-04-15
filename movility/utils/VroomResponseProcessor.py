@@ -38,7 +38,6 @@ class VroomResponseProcessor:
             route["origen"] = "%f, %f" % (request_steps[0]["location"][0], request_steps[0]["location"][1])
             route["destino"] = "%f, %f" % (request_steps[-1]["location"][0], request_steps[-1]["location"][1])
 
-            # TODO: maybe this is not exactly the best way to remove the start/end steps, can we make a loop? (worth?)
             request_steps.remove(request_steps[-1])
             request_steps.remove(request_steps[0])
 

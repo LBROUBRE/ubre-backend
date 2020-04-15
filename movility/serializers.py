@@ -2,10 +2,10 @@ from .models import *
 from rest_framework import serializers
 
 
-"""""""""""""""""""""""""""
-        Solicitudes
-"""""""""""""""""""""""""""
 class SolicitudesSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Solicitudes
+    """""""""""""""""""""""""""
     origen = serializers.CharField(required=False)
     destino = serializers.CharField(required=False)
     fechaHoraSalida = serializers.DateTimeField(required=False)
@@ -44,11 +44,10 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         extra_kwargs = {'paradas':{'required': False}}
 
 
-"""""""""""""""""""""""""""
-        Usuarios
-"""""""""""""""""""""""""""
-
 class UsuariosSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Usuarios
+    """""""""""""""""""""""""""
     dni = serializers.CharField(required=False)
     name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
@@ -89,18 +88,44 @@ class UsuariosSerializer(serializers.ModelSerializer):
         extra_kwargs = {'solicitudes':{'required': False}}
 
 
-"""""""""""""""""""""""""""
-        Paradas
-"""""""""""""""""""""""""""
-class ParadasSerializer(serializers.ModelSerializer):
-    coordenadas = serializers.CharField(required=False)
+class StepsSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Steps
+    """""""""""""""""""""""""""
     fechaHora = serializers.DateTimeField(required=False)
+
+    def create(self, validated_data):
+        """
+        Crea y retorna una nueva instancia de Step, dado el 'validated_data'
+        """
+        return Steps.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Actualiza y retorna la instancia de Step creada, dado un 'validated_data'
+        """
+        if 'fechaHora' in validated_data:
+            instance.fechaHora = validated_data.get('fechaHora', instance.fechaHora)        
+        instance.save()
+        return instance
+
+    class Meta:
+        model = Steps
+        fields = "__all__"
+        extra_kwargs = {'solicitudes': {'required': False}, 'paradas': {'required': False}}
+
+
+class ParadasVirtualesSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+        ParadasVirtuales
+    """""""""""""""""""""""""""
+    coordenadas = serializers.CharField(required=False)
 
     def create(self, validated_data):
         """
         Crea y retorna una nueva instancia de Conductor, dado el 'validated_data'
         """
-        return Paradas.objects.create(**validated_data)
+        return ParadasVirtuales.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
@@ -108,25 +133,23 @@ class ParadasSerializer(serializers.ModelSerializer):
         """
         if 'coordenadas' in validated_data:
             instance.coordenadas = validated_data.get('coordenadas', instance.coordenadas)
-        if 'fechaHora' in validated_data:
-            instance.fechaHora = validated_data.get('fechaHora', instance.fechaHora)        
         instance.save()
         return instance
 
     class Meta:
-        model = Paradas
+        model = ParadasVirtuales
         fields = "__all__"
-        extra_kwargs = {'solicitudes':{'required': False}}
+        extra_kwargs = {}
 
 
-"""""""""""""""""""""""""""
-        Rutas
-"""""""""""""""""""""""""""
 class RutasSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Rutas
+    """""""""""""""""""""""""""
     origen = serializers.CharField(required=False) # identificador de la ubicación
     destino = serializers.CharField(required=False) # identificador de la ubicación
     geometry = serializers.CharField(required=False)
-    paradas = ParadasSerializer(many=True)
+    paradas = StepsSerializer(many=True)
 
     def create(self, validated_data):
         """
@@ -141,7 +164,7 @@ class RutasSerializer(serializers.ModelSerializer):
         ruta.save()
         paradas = validated_data.get('paradas')
         for parada in paradas:
-            Paradas.objects.create(rutas=ruta, **parada)
+            Steps.objects.create(rutas=ruta, **parada)
         return validated_data
 
     def update(self, instance, validated_data):
@@ -163,10 +186,10 @@ class RutasSerializer(serializers.ModelSerializer):
         extra_kwargs = {'paradas':{'required': False}, 'solicitudes':{'required': False}}
 
 
-"""""""""""""""""""""""""""
-        Vehiculos
-"""""""""""""""""""""""""""
 class VehiculosSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Vehiculos
+    """""""""""""""""""""""""""
     matricula = serializers.CharField(required=True)
     modelo = serializers.CharField(required=True)
     plazas = serializers.IntegerField(required=True)
@@ -205,10 +228,11 @@ class VehiculosSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {'rutas':{'required': False}}
 
-"""""""""""""""""""""""""""
-        Conductores
-"""""""""""""""""""""""""""
+
 class ConductoresSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Conductores
+    """""""""""""""""""""""""""
     dni = serializers.CharField(required=False)
     name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
@@ -250,10 +274,11 @@ class ConductoresSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {'rutas':{'required': False}}
 
-"""""""""""""""""""""""""""
-        Tarificación
-"""""""""""""""""""""""""""
+
 class TarificacionSerializer(serializers.ModelSerializer):
+    """""""""""""""""""""""""""
+            Tarificación
+    """""""""""""""""""""""""""
     user_type = serializers.CharField(required=True)
     discount = serializers.DecimalField(required=True, max_digits=2, decimal_places=2)
 

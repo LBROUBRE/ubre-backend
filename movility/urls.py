@@ -16,11 +16,11 @@ urlpatterns = [
 
     # Taxes
     path('taxes/', tarificacion_list),
-    path('drivers/<pk>', tarificacion_detail),
+    path('taxes/<pk>', tarificacion_detail),
 
-    # Stops
-    path('stops/', paradas_list),
-    path('stops/<pk>', paradas_list),
+    # VirtualStops
+    path('stops/', stops_list),
+    path('stops/<pk>', stops_detail),
 
     # Vehicles
     path('vehicles/', vehiculos_list),
