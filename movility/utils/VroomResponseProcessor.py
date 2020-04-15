@@ -55,7 +55,7 @@ class VroomResponseProcessor:
             for request_step in request_steps:
                 from datetime import datetime
                 new_step = dict()
-                new_step["coordenadas"] = "%f, %f" % (request_step["location"][0], request_step["location"][1])
+                new_step["parada"] = self.request.get_stop_id(request_step["job"])
                 date = datetime.fromtimestamp(request_step["arrival"])
                 new_step["fechaHora"] = date.strftime('%Y-%m-%dT%H:%M:%SZ')
                 new_step["solicitudes"] = self.request.get_request_id(request_step["job"])

@@ -34,10 +34,17 @@ class VroomRequest:
 
     def get_request_id(self, job_id):
         for shipment in self.shipments:
-            if shipment["pickup"] == job_id:
+            if shipment["pickup"]["job"] == job_id:
                 return shipment["request"]
-            if shipment["delivery"] == job_id:
+            if shipment["delivery"]["job"] == job_id:
                 return shipment["request"]
+
+    def get_stop_id(self, job_id):
+        for shipment in self.shipments:
+            if shipment["pickup"]["job"] == job_id:
+                return shipment["pickup"]["stop_id"]
+            if shipment["delivery"]["job"] == job_id:
+                return shipment["pickup"]["stop_id"]
 
     def get_next_job_id(self):
         next_job_id = 0
@@ -72,7 +79,7 @@ class VroomRequest:
             "capacity": [capacity]
         })
 
-    def add_shipment(self, db_request_id, pickup_location, delivery_location, state,
+    def add_shipment(self, db_request_id, pickup_vs_id, pickup_location, delivery_vs_id, delivery_location, state,
                      pickup_date=None, delivery_date=None, amount=1):
 
         if state == 'PA' or state == 'R':
@@ -83,8 +90,14 @@ class VroomRequest:
 
         self.shipments.append({
             "request": db_request_id,
-            "pickup": pickup_id,
-            "delivery": delivery_id
+            "pickup": {
+                "job": pickup_id,
+                "stop_id": pickup_vs_id
+            },
+            "delivery": {
+                "job": delivery_id,
+                "stop_id": delivery_vs_id
+            }
         })
 
         pickup_location_array = [float(pickup_location.split(",")[0]), float(pickup_location.split(",")[1])]
