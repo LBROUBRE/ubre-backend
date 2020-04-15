@@ -25,9 +25,9 @@ def generate_vroom_request():
     
     # get all "paradas" in all Solicitudes instances;
     for req in reqs.iterator():
-        origin = get_best_virtual_stop(req.origen)
-        destination = get_best_virtual_stop(req.destino) 
-        vroom_request.add_shipment(req.id, origin, destination, req.estado,
+        origin_vs_id, origin= get_best_virtual_stop(req.origen)
+        destination_vs_id, destination = get_best_virtual_stop(req.destino)
+        vroom_request.add_shipment(req.id, origin_vs_id, origin, destination_vs_id, destination, req.estado,
                                    req.fechaHoraSalida, req.fechaHoraLlegada, amount=1)
         # TODO?: origen y destino -> [lon, lat]
 
@@ -45,31 +45,35 @@ def get_best_virtual_stop(location):
     v_stops = ParadasVirtuales.objects.all()
     MAXIMUM_DISTANCE_FOR_CHECKING = 0.75  # maximum km
     approved_v_stops = []  # Here we will store all coordinates
-    lon1 = int(location.split(",")[0])
-    lat1 = int(location.split(",")[1])
+    lon1 = float(location.split(",")[0])
+    lat1 = float(location.split(",")[1])
     for v_stop in v_stops.iterator():
-        lon2 = int(v_stop.coordenadas.split(",")[0])
-        lat2 = int(v_stop.coordenadas.split(",")[1])
+        lon2 = float(v_stop.coordenadas.split(",")[0])
+        lat2 = float(v_stop.coordenadas.split(",")[1])
 
         if calculate_nodes_distance([lon1, lat1], [lon2, lat2]) < MAXIMUM_DISTANCE_FOR_CHECKING:
-            approved_v_stops.append([lon2, lat2])
+            approved_v_stops.append(v_stop)
 
     best_duration = -1
+    best_virtual_stop = None
     import requests as rest
     for approved_v_stop in approved_v_stops:
-        destination = "%i, %i" % (approved_v_stop[1], approved_v_stop[0])
-        origin = "%i, %i" % (lon1, lat1)
+        destination = "%f,%f" % (approved_v_stop.coordenadas.split(",")[0], approved_v_stop.coordenadas.split(",")[1])
+        origin = "%f,%f" % (lon1, lat1)
         res = rest.post("http://127.0.0.1:5000/route/v1/foot/%s;%s" % (origin, destination))
         duration = res.json()["routes"][0]["duration"]
-        if best_duration == -1:
+        if (best_duration < duration) or (best_duration == -1):
             best_duration = duration
-            best_virtual_stop = destination
-        elif best_duration < duration:
-            best_duration = duration
-            best_virtual_stop = destination
+            best_virtual_stop = approved_v_stop
 
-        return best_virtual_stop
-
+    if best_virtual_stop is None:
+        # Crear vparada
+        json = {
+            "coordenadas": [lon1, lat1]
+        }
+        res = rest.post("http://127.0.0.1:8000/movility/stops/", json=json)
+        best_virtual_stop = res.json()["id"]
+    return best_virtual_stop["id"], best_virtual_stop["coordinates"]
 
 
 def calculate_nodes_distance(n1, n2):
@@ -97,13 +101,13 @@ def process_vroom_routing(request):
 
     routes = vroom_response_processor.get_routes()
     for route in routes:
-        res = rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
+        rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
         for step in route["paradas"]:
             json = {
                 "estado": 'A'
             }
             request_id = step["solicitudes"]
-            res = rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
+            rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
             
 
 
