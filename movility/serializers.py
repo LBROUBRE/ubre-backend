@@ -137,7 +137,7 @@ class ParadasVirtualesSerializer(serializers.ModelSerializer):
         return instance
 
     class Meta:
-        model = Steps
+        model = ParadasVirtuales
         fields = "__all__"
         extra_kwargs = {}
 

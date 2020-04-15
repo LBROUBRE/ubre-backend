@@ -7,7 +7,7 @@ import requests
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 
-from .models import Usuarios, Rutas, Solicitudes, Vehiculos
+from .models import Usuarios, Rutas, Solicitudes, Vehiculos, ParadasVirtuales
 from .serializers import *
 
 from .utils import routes
@@ -249,48 +249,48 @@ def tarificacion_detail(request, pk, format=None):
 
 
 """""""""""""""""""""""""""
-        Paradas
+        Virtual Stop
 """""""""""""""""""""""""""
 @api_view(['GET', 'POST'])
-def paradas_list(request, format=None):
+def stops_list(request, format=None):
     """
-    Lista toda la Tarificación, o crea uno nuevo.
+    Lista todas las paradas virtuales, o crea una nuevo.
     """
     if request.method == 'GET':
-        paradas = Steps.objects.all()
-        serializer = StepsSerializer(paradas, many=True)
+        stops = ParadasVirtuales.objects.all()
+        serializer = ParadasVirtualesSerializer(stops, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = StepsSerializer(data=request.data)
+        serializer = ParadasVirtualesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def paradas_detail(request, pk, format=None):
+def stops_detail(request, pk, format=None):
     """
-    Obtiene, actualiza o borra una tarifa.
+    Obtiene, actualiza o borra una parada virtual.
     """
     try:
-        paradas = Steps.objects.get(pk=pk)
-    except Steps.DoesNotExist:
+        stops = ParadasVirtuales.objects.get(pk=pk)
+    except ParadasVirtuales.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = StepsSerializer(paradas)
+        serializer = ParadasVirtualesSerializer(stops)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = StepsSerializer(paradas, data=request.data)
+        serializer = ParadasVirtualesSerializer(stops, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
-        paradas.delete()
+        stops.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
