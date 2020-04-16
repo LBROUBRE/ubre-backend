@@ -45,8 +45,8 @@ class Vehiculos(models.Model):
 
 
 class Solicitudes(models.Model):
-    origen = models.CharField(max_length=30, blank=False)
-    destino = models.CharField(max_length=30, blank=False)
+    origen = models.CharField(max_length=50, blank=False)
+    destino = models.CharField(max_length=50, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=True, default=None)
     fechaHoraLlegada = models.DateTimeField(blank=True, default=None)
     usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.CASCADE)
@@ -86,8 +86,8 @@ class Conductores(models.Model):
 
 
 class Rutas(models.Model):
-    origen = models.CharField(max_length=25, blank=False, unique=False)
-    destino = models.CharField(max_length=25, blank=False, unique=False)
+    origen = models.CharField(max_length=50, blank=False, unique=False)
+    destino = models.CharField(max_length=50, blank=False, unique=False)
     geometry = models.CharField(max_length=131072, blank=False, unique=False)
     vehiculo = models.ForeignKey(Vehiculos, default=None, related_name="rutas", on_delete=models.DO_NOTHING)
     # conductor = models.ForeignKey(Conductores, related_name='rutas', default=None, on_delete=models.DO_NOTHING)
@@ -111,7 +111,7 @@ class Tarificacion(models.Model):
 
 
 class ParadasVirtuales(models.Model):
-    coordenadas = models.CharField(max_length=255, blank=False, unique=False)  # latitud, longitud
+    coordenadas = models.CharField(max_length=50, blank=False, unique=False)  # latitud, longitud
 
     def __str__(self):
         return '%s ' % self.coordenadas

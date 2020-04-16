@@ -58,8 +58,8 @@ def get_best_virtual_stop(location):
     best_virtual_stop = None
     import requests as rest
     for approved_v_stop in approved_v_stops:
-        destination = "%f,%f" % (approved_v_stop.coordenadas.split(",")[0], approved_v_stop.coordenadas.split(",")[1])
-        origin = "%f,%f" % (lon1, lat1)
+        destination = "%s,%s" % (approved_v_stop.coordenadas.split(",")[0], approved_v_stop.coordenadas.split(",")[1])
+        origin = "%s,%s" % (lon1, lat1)
         res = rest.post("http://127.0.0.1:5000/route/v1/foot/%s;%s" % (origin, destination))
         duration = res.json()["routes"][0]["duration"]
         if (best_duration < duration) or (best_duration == -1):
@@ -69,11 +69,15 @@ def get_best_virtual_stop(location):
     if best_virtual_stop is None:
         # Crear vparada
         json = {
-            "coordenadas": [lon1, lat1]
+            "coordenadas": "%f,%f"%(lon1,lat1)
         }
         res = rest.post("http://127.0.0.1:8000/movility/stops/", json=json)
-        best_virtual_stop = res.json()["id"]
-    return best_virtual_stop["id"], best_virtual_stop["coordinates"]
+        best_virtual_stop = res.json()
+    
+    if (isinstance(best_virtual_stop,dict)):
+        return best_virtual_stop["id"], best_virtual_stop["coordenadas"]
+    else:
+        return best_virtual_stop.id, best_virtual_stop.coordenadas
 
 
 def calculate_nodes_distance(n1, n2):
@@ -90,7 +94,7 @@ def calculate_nodes_distance(n1, n2):
     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlng/2)**2
     c = 2 * asin(sqrt(a))
     r = 6371 # Radius of earth in kilometers. Use 3956 for miles
-    return c * r / 1000
+    return c * r
 
 
 def process_vroom_routing(request):
@@ -102,7 +106,7 @@ def process_vroom_routing(request):
     routes = vroom_response_processor.get_routes()
     for route in routes:
         rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
-        for step in route["paradas"]:
+        for step in route["steps"]:
             json = {
                 "estado": 'A'
             }

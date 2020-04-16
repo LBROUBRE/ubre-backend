@@ -62,7 +62,7 @@ class VroomResponseProcessor:
 
                 steps.append(new_step)
 
-            route["paradas"] = steps
+            route["steps"] = steps
 
             routes.append(route)
 
