@@ -39,3 +39,18 @@ Desde Django, tenemos que crear las tablas en la base de datos. Usaremos los sig
 python3 manage.py makemigrations
 python3 manage.py migrate
 ```
+
+Para insertar un usuario en la base de datos se haría de la siguiente forma:
+```
+{
+ "email":"pablotria98@gmail.com",
+ "password":"123456",
+ "profile": {
+ 		"dni": "34285964W",
+        "name": "Pablo",
+        "last_name": "Cachafeiro",
+        "tlf": "690814618",
+        "age": 21
+ }
+}
+```
