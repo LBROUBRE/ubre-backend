@@ -7,55 +7,10 @@ import requests
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 
-from .models import Usuarios, Rutas, Solicitudes, Vehiculos, ParadasVirtuales
+from .models import *
 from .serializers import *
 
 from .utils import routes
-
-"""""""""""""""""""""""""""
-        Usuarios
-"""""""""""""""""""""""""""
-@api_view(['GET', 'POST'])
-def usuarios_list(request, format=None):
-    """
-    Lista todos los usuarios, o crea uno nuevo.
-    """
-    if request.method == 'GET':
-        usuarios = Usuarios.objects.all()
-        serializer = UsuariosSerializer(usuarios, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = UsuariosSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def usuarios_detail(request, pk, format=None):
-    """
-    Obtiene, actualiza o borra un usuario.
-    """
-    try:
-        user = Usuarios.objects.get(pk=pk)
-    except Usuarios.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = UsuariosSerializer(user)
-        return Response(serializer.data)
-
-    elif request.method == 'PUT':
-        serializer = UsuariosSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 """""""""""""""""""""""""""
         Vehiculos

@@ -70,50 +70,6 @@ class SolicitudesSerializer(serializers.ModelSerializer):
         extra_kwargs = {'paradas':{'required': False}}
 
 
-class UsuariosSerializer(serializers.ModelSerializer):
-    """""""""""""""""""""""""""
-            Usuarios
-    """""""""""""""""""""""""""
-    dni = serializers.CharField(required=False)
-    name = serializers.CharField(required=False)
-    last_name = serializers.CharField(required=False)
-    email = serializers.EmailField(required=False)
-    tlf = serializers.CharField(required=False)
-    age = serializers.IntegerField(required=False)
-    gender = serializers.CharField(required=False)
-    solicitudes = SolicitudesSerializer(many=True, required=False)
-
-    def create(self, validated_data):
-        """
-        Crea y retorna una nueva instancia de User, dado el 'validated_data'
-        """
-        return Usuarios.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Actualiza y retorna la instancia de Solicitud creada, dado un 'validated_data'
-        """
-        if 'name' in validated_data:
-            instance.name = validated_data.get('name', instance.name)
-        if 'last_name' in validated_data:
-            instance.last_name = validated_data.get('last_name', instance.last_name)
-        if 'email' in validated_data:
-            instance.email = validated_data.get('email', instance.email)
-        if 'tlf' in validated_data:
-            instance.tlf = validated_data.get('tlf', instance.tlf)
-        if 'age' in validated_data:
-            instance.age = validated_data.get('age', instance.age)
-        if 'gender' in validated_data:
-            instance.gender = validated_data.get('gender', instance.gender)
-        instance.save()
-        return instance
-
-    class Meta:
-        model = Usuarios
-        fields = "__all__"
-        extra_kwargs = {'solicitudes':{'required': False}}
-
-
 class ParadasVirtualesSerializer(serializers.ModelSerializer):
     """""""""""""""""""""""""""
         ParadasVirtuales

@@ -2,10 +2,6 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    # Users
-    path('users/', usuarios_list),
-    path('users/<pk>', usuarios_detail),
-
     # Requests
     path('requests/', solicitudes_list),
     path('requests/<pk>', solicitudes_detail),
