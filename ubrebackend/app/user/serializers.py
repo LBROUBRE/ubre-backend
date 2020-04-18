@@ -4,17 +4,19 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 from ubrebackend.app.profile.models import UserProfile
 from ubrebackend.app.user.models import User
-
+from movility.serializers import SolicitudesSerializer
 
 JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
 JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
 
 
 class UserSerializer(serializers.ModelSerializer):
+    solicitudes = SolicitudesSerializer(many=True, required=False)
 
     class Meta:
         model = UserProfile
-        fields = ('first_name', 'last_name', 'phone_number', 'age', 'gender')
+        fields = ('dni','name', 'last_name', 'tlf', 'age', 'solicitudes')
+        extra_kwargs = {'solicitudes':{'required':False}}
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -31,11 +33,11 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         UserProfile.objects.create(
             user=user,
-            first_name=profile_data['first_name'],
+            dni=profile_data['dni'],
+            name=profile_data['name'],
             last_name=profile_data['last_name'],
-            phone_number=profile_data['phone_number'],
+            tlf=profile_data['tlf'],
             age=profile_data['age'],
-            gender=profile_data['gender']
         )
         return user
 

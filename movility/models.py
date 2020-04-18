@@ -3,25 +3,7 @@
 from django.db import models
 from django.urls import reverse
 import uuid
-
-
-class Usuarios(models.Model):
-    dni = models.CharField(max_length=9, primary_key=True)
-    name = models.CharField(max_length=25, unique=False)
-    last_name = models.CharField(max_length=50, unique=False)
-    email = models.EmailField(max_length=255, unique=True)
-    age = models.PositiveIntegerField(null=False, blank=False)
-    tlf = models.CharField(max_length=10, unique=True, null=False, blank=False)
-    GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
-    )
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default='')
-
-    def __str__(self):
-        return '%s %s %s' % (self.dni, self.name, self.last_name)
-
+from ubrebackend.app.profile.models import UserProfile
 
 class Vehiculos(models.Model):
     matricula = models.CharField(max_length=7, primary_key=True)
@@ -49,7 +31,7 @@ class Solicitudes(models.Model):
     destino = models.CharField(max_length=50, blank=False)
     fechaHoraSalida = models.DateTimeField(blank=True, default=None)
     fechaHoraLlegada = models.DateTimeField(blank=True, default=None)
-    usuario = models.ForeignKey(Usuarios, related_name='solicitudes', default=None, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(UserProfile, related_name='solicitudes', default=None, on_delete=models.CASCADE)
     STATES_CHOICES = {
         ('PE', 'Pending'),
         ('A', 'Accepted'),
