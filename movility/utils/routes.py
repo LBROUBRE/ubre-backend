@@ -6,6 +6,8 @@ from movility.models import Solicitudes, Vehiculos, Conductores, ParadasVirtuale
 from movility.serializers import *
 from movility.utils.VroomRequest import VroomRequest
 
+from movility.utils.output import createNewOutput, getLastOutputData, setLastOutputData  # OUTPUT
+
 # def name_to_coordinates(search_string, alldata=False): # TODO do this in Front-end
 #     from OSMPythonTools.nominatim import Nominatim
 #     nominatim = Nominatim()
@@ -15,6 +17,9 @@ from movility.utils.VroomRequest import VroomRequest
 
 
 def generate_vroom_request():
+
+    createNewOutput()  # OUTPUT
+    output_data = getLastOutputData()  # OUTPUT
     
     # get all instances of Solicitudes, Vehiculos and Conductores in the DB
     reqs = Solicitudes.objects.all()
@@ -29,11 +34,24 @@ def generate_vroom_request():
         destination_vs_id, destination = get_best_virtual_stop(req.destino)
         vroom_request.add_shipment(req.id, origin_vs_id, origin, destination_vs_id, destination, req.estado,
                                    req.fechaHoraSalida, req.fechaHoraLlegada, amount=1)
-        # TODO?: origen y destino -> [lon, lat]
+        output_data["solicitudes"].append({  # OUTPUT
+            "id":req.id,
+            "estado":"A",  # will change to "R" in VroomResponseProcessor, if it is necessary
+            "origen_deseado":req.origen,
+            "destino_deseado":req.destino,
+            "origen_real":origin,
+            "destino_real":destination,
+            "hora_salida_deseada":datetime.fromtimestamp(req.fechaHoraSalida.timestamp()).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "hora_llegada_deseada":datetime.fromtimestamp(req.fechaHoraLlegada.timestamp()).strftime('%Y-%m-%dT%H:%M:%SZ'),
+            "hora_salida_real":None,
+            "hora_llegada_real":None
+        })
 
     # get all buses in Vehiculos instances
     for bus in buses.iterator():
         vroom_request.add_vehicle(bus.matricula)
+    
+    setLastOutputData(output_data)  # OUTPUT
 
     return vroom_request
 
@@ -104,14 +122,43 @@ def process_vroom_routing(request):
     vroom_response_processor = VroomResponseProcessor(request)
 
     routes = vroom_response_processor.get_routes()
+
+    output_data = getLastOutputData()  # OUTPUT
+    
     for route in routes:
         rest.post("http://127.0.0.1:8000/movility/routes/", json=route)
+
+        solicitudes_atendidas = []  # OUTPUT
+        
         for step in route["steps"]:
             json = {
                 "estado": 'A'
             }
             request_id = step["solicitudes"]
             rest.put("http://127.0.0.1:8000/movility/requests/%i" % request_id, json=json)
+            
+            if request_id not in solicitudes_atendidas:  # OUTPUT
+                solicitudes_atendidas.append(request_id)
+        
+        response_routes = rest.get("http://127.0.0.1:8000/movility/routes/").json()  # OUTPUT - get max route_id in DB
+        route_id = 0  # OUTPUT
+        for route in response_routes:  # OUTPUT
+            route_id = route["id"] if route["id"] > route_id else route_id
+        output_data["rutas"].append({  # OUTPUT
+            "id":route_id,
+            "solicitudes_atendidas":solicitudes_atendidas,
+            "tramos":[]
+        })
+
+    for route_index, route in enumerate(request.response["routes"]):
+        for step_index in range(1,(len(route["steps"]))):
+            output_data["rutas"][route_index]["tramos"].append({
+                "origen":route["steps"][step_index-1]["location"],
+                "destino":route["steps"][step_index]["location"],
+                "pasajeros":route["steps"][step_index]["load"]
+            })
+
+    setLastOutputData(output_data)  # OUTPUT
             
 
 
