@@ -6,6 +6,8 @@ urlpatterns = [
     path('requests/', solicitudes_list),
     path('requests/<pk>', solicitudes_detail),
 
+    path('requestsfront', solicitudes_front),
+
     # Drivers
     path('drivers/', conductores_list),
     path('drivers/<pk>', conductores_detail),
@@ -29,4 +31,5 @@ urlpatterns = [
     # Test
     path('test/', test_vroom), # TODO remove
 
+    #
 ]
