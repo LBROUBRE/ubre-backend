@@ -17,6 +17,8 @@ class VroomRequest:
             "vehicles": [],
             "shipments": []
         }
+
+        self.response = None
     
     def get_request(self):
         return self.vroom_request
@@ -25,7 +27,8 @@ class VroomRequest:
         # example ={"vehicles":[{"id":0,"start":[2.3526,48.8604],"end":[2.3526,48.8604]}],
         # "jobs":[{"id":0, "location":[2.3691,48.8532]},{"id":1,"location":[2.2911,48.8566]}],"options":{"g":True}}
         res = rest.post("http://localhost:3000/", json=self.vroom_request)
-        return res.json()
+        self.response = res.json()
+        return self.response
 
     def get_vehicle_id(self, vroom_vehicle_id):
         for vehicle in self.vehicles:
@@ -35,16 +38,16 @@ class VroomRequest:
     def get_request_id(self, job_id):
         for shipment in self.shipments:
             if shipment["pickup"]["job"] == job_id:
-                return shipment["request"]
+                return shipment["request"], "pickup"
             if shipment["delivery"]["job"] == job_id:
-                return shipment["request"]
+                return shipment["request"], "delivery"
 
     def get_stop_id(self, job_id):
         for shipment in self.shipments:
             if shipment["pickup"]["job"] == job_id:
-                return shipment["pickup"]["stop_id"]
+                return shipment["pickup"]["stop_id"], "pickup"
             if shipment["delivery"]["job"] == job_id:
-                return shipment["pickup"]["stop_id"]
+                return shipment["pickup"]["stop_id"], "delivery"
 
     def get_next_job_id(self):
         next_job_id = 0

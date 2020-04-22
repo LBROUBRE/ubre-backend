@@ -12,11 +12,6 @@ migrations/
 *.pyc
 __pycache__/
 
-# **/__pycache__/
-# */*/*/__pycache__/
-# */*/__pycache__
-# */__pycache__
-
 # C extensions
 *.so
 
@@ -70,5 +65,3 @@ docs/_build/
 
 # PyBuilder
 target/
-
-
