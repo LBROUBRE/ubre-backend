@@ -3,7 +3,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-from ubrebackend.app.user.serializers import UserRegistrationSerializer
+from ubrebackend.app.user.serializers import *
 from ubrebackend.app.profile.models import UserProfile
 
 
