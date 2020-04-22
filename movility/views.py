@@ -111,28 +111,11 @@ def solicitudes_detail(request, pk, format=None):
         solicitud.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST'])
-def solicitudes_front(request, format=None):
+@api_view(['GET'])
+def solicitudes_front(request, pk, format=None):
     """
-    Carga una nueva solicitud, calcular las rutas y devolver las rutas calculadas
+    Calcular las rutas y devolver las rutas calculadas
     """
-    new_data = {
-        "origen": request.data["origen"],
-        "destino": request.data["destino"],
-        "fechaHoraSalida": request.data["fechaHoraSalida"],  # TODO date format
-        "usuario": request.data["usuario"],
-        "fechaHoraLlegada": request.data["fechaHoraLlegada"],
-        "precio": 5  # TODO
-    }
-    serializer = SolicitudesSerializer(data=new_data)
-    id = None
-    if serializer.is_valid():
-        serializer.save()
-        print(serializer.data)
-        id = serializer.data["id"]
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     rutas = Rutas.objects.all()
     for ruta in rutas.iterator():
         ruta.delete()
@@ -140,12 +123,39 @@ def solicitudes_front(request, format=None):
 
     steps = Steps.objects.all()
 
+    json = {
+        "polylineID": None,
+        "origin": None,
+        "destination": None,
+        "timeToDest": 0,
+        "price": 0
+    }
+    init_time = 0
     for step in steps.iterator():
-        if step.solicitudes.id == id:
+        print("-------")
+        print(pk)
+        print(step.solicitudes.id)
+        print("-------")
+        if int(step.solicitudes.id) == int(pk):
+            print("aquii")
             id_ruta = step.rutas.id
             ruta = Rutas.objects.get(pk=id_ruta)
-            serializer = RutasSerializer(ruta)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            if json["polylineID"] is None:
+                json["polylineID"] = ruta.geometry
+            if json["origin"] is None:
+                from datetime import datetime as dt
+                json["origin"] = step.parada.coordenadas
+                init_time = float(dt.timestamp(step.fechaHora))
+            elif json["destination"] is None:
+                from datetime import datetime as dt
+                json["destination"] = step.parada.coordenadas
+                time_2_dest_sec = float(dt.timestamp(step.fechaHora)) - init_time
+                json["timeToDest"] = time_2_dest_sec/60
+                json["price"] = (time_2_dest_sec/60) * 0.03
+
+    print(json)
+    if json["timeToDest"] is not None and json["timeToDest"] > 0:
+        return Response(json, status=status.HTTP_200_OK)
 
     return Response({}, status=status.HTTP_404_NOT_FOUND)
 

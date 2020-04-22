@@ -6,7 +6,7 @@ urlpatterns = [
     path('requests/', solicitudes_list),
     path('requests/<pk>', solicitudes_detail),
 
-    path('requestsfront', solicitudes_front),
+    path('requestsfront/<pk>', solicitudes_front),
 
     # Drivers
     path('drivers/', conductores_list),
