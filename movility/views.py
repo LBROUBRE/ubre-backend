@@ -132,34 +132,26 @@ def solicitudes_front(request, pk, format=None):
     }
     init_time = 0
     for step in steps.iterator():
-        print("-------")
-        print(pk)
-        print(step.solicitudes.id)
-        print("-------")
         if int(step.solicitudes.id) == int(pk):
-            print("aquii")
             id_ruta = step.rutas.id
             ruta = Rutas.objects.get(pk=id_ruta)
             if json["polylineID"] is None:
                 json["polylineID"] = ruta.geometry
             if json["origin"] is None:
                 from datetime import datetime as dt
-                json["origin"] = step.parada.coordenadas
+                json["origin"] = [step.parada.coordenadas.split(",")[1].strip(),step.parada.coordenadas.split(",")[0].strip()]
                 init_time = float(dt.timestamp(step.fechaHora))
             elif json["destination"] is None:
                 from datetime import datetime as dt
-                json["destination"] = step.parada.coordenadas
+                json["destination"] = [step.parada.coordenadas.split(",")[1].strip(),step.parada.coordenadas.split(",")[0].strip()]
                 time_2_dest_sec = float(dt.timestamp(step.fechaHora)) - init_time
-                json["timeToDest"] = time_2_dest_sec/60
-                json["price"] = (time_2_dest_sec/60) * 0.03
+                json["timeToDest"] = round(time_2_dest_sec/60, 2)
+                json["price"] = round((time_2_dest_sec/60) * 0.03, 2)
 
-    print(json)
     if json["timeToDest"] is not None and json["timeToDest"] > 0:
-        return Response(json, status=status.HTTP_200_OK)
+        return Response([json], status=status.HTTP_200_OK)
 
-    return Response({}, status=status.HTTP_404_NOT_FOUND)
-
-
+    return Response([], status=status.HTTP_204_NO_CONTENT)
 
 """""""""""""""""""""""""""
         Conductores

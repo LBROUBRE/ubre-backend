@@ -138,14 +138,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
         ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.IsAdminUser',
-        'rest_framework.permissions.AllowAny',
-        ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        )
+    #'DEFAULT_PERMISSION_CLASSES': [
+    #    'rest_framework.permissions.IsAuthenticated',
+    #    'rest_framework.permissions.IsAdminUser',
+    #    'rest_framework.permissions.AllowAny',
+    #    ],
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    #    )
 }
 
 # Jwt Authentication

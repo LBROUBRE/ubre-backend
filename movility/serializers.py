@@ -31,6 +31,7 @@ class SolicitudesSerializer(serializers.ModelSerializer):
     """""""""""""""""""""""""""
             Solicitudes
     """""""""""""""""""""""""""
+    id = serializers.IntegerField(required=False)
     origen = serializers.CharField(required=False)
     destino = serializers.CharField(required=False)
     fechaHoraSalida = serializers.DateTimeField(required=False)
